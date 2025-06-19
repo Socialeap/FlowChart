@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlowChart Manager - Demo & Tutorial</title>
+  <title>FlowChart Manager</title>
 
   <link
     rel="icon"
@@ -44,8 +44,6 @@
       --modal-strong-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
       --link-color: #555;
       --link-selected-color: #e74c3c;
-      --demo-badge-bg: #ff6b35;
-      --demo-badge-text: white;
     }
 
     body.dark-mode {
@@ -65,7 +63,6 @@
       --modal-strong-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
       --link-color: #aaa;
       --link-selected-color: #ff5252;
-      --demo-badge-bg: #ff8a50;
     }
 
     * { box-sizing: border-box; }
@@ -74,7 +71,6 @@
     header { background: var(--header-fixed-bg); backdrop-filter: blur(var(--backdrop-blur)); -webkit-backdrop-filter: blur(var(--backdrop-blur)); border-bottom: 1px solid var(--header-glass-border); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); color: var(--text-on-header); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; position: sticky; top: 0; z-index: 999; }
     header h1 { display: flex; align-items: center; margin: 0; font-size: 1.75rem; font-weight: 600; color: var(--text-on-header); }
     #headerLogo { width: 32px; height: 32px; margin-right: 0.75rem; }
-    .demo-badge { background: var(--demo-badge-bg); color: var(--demo-badge-text); padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-left: 1rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
     header h1 input#flowchartNameInput { margin-left: 1rem; font-size: 0.9rem; padding: 0.5rem 1rem; border: 1px solid var(--input-border); border-radius: 8px; background: var(--input-bg); color: var(--input-text); transition: all 0.3s ease; font-weight: 400; }
     header h1 input#flowchartNameInput:focus { outline: none; border-color: var(--glass-border); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1); }
     nav { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
@@ -92,42 +88,37 @@
     #flowchart { display: block; width: 100%; height: 100%; }
     line.link { cursor: pointer; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
     line.link.selected { stroke: var(--link-selected-color) !important; stroke-width: 4px; stroke-dasharray: 5, 5; }
-    #banner-container { position: absolute; top: 10px; left: 10px; width: 48%; max-width: 588px; aspect-ratio: 1500 / 625; border-radius: 12px; overflow: hidden; background: transparent; z-index: 50; }
+    #banner-container { position: absolute; top: 10px; left: 10px; width: 35%; max-width: 420px; aspect-ratio: 1500 / 625; border-radius: 12px; overflow: hidden; background: transparent; z-index: 50; pointer-events: none; }
     #banner-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding-top: 50px; overflow-y: auto; }
     .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); color: var(--modal-text); margin: 20px auto; padding: 2rem; width: 90%; max-width: 750px; overflow-y: auto; max-height: calc(100vh - 100px); border-radius: 20px; position: relative; box-shadow: var(--modal-strong-shadow); transition: background 0.3s ease, border-color 0.3s ease; }
-    #deleteLinkModal .modal-content, #colorLegendModal .modal-content, #demoSaveModal .modal-content { max-width: 500px; text-align: center; }
-    #shareModal .modal-content { max-width: 1200px; }
-    #shareModal iframe { width: 100%; height: 85vh; border: none; }
-
-    #color-legend-entries { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
+    #deleteLinkModal .modal-content, #colorLegendModal .modal-content { max-width: 500px; }
+    #color-legend-entries { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
     .legend-entry { display: flex; align-items: center; gap: 1rem; }
     .legend-color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--glass-border); flex-shrink: 0; }
     .legend-entry input { flex-grow: 1; }
     .close-button { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: var(--close-button-color); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, 0.1); transition: all 0.3s ease; z-index: 10; }
     .close-button:hover { color: var(--close-button-hover-color); background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
-    form { display: flex; flex-direction: column; gap: 1rem; text-align: left; }
+    form { display: flex; flex-direction: column; gap: 1rem; }
     input, select, textarea { padding: 12px 16px; border: 1px solid var(--input-border); border-radius: 12px; font-size: 1em; background: var(--input-bg); color: var(--input-text); font-family: 'Inter', 'Segoe UI', sans-serif; transition: all 0.3s ease; }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--glass-border); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
     textarea { resize: vertical; min-height: 80px; }
     #taskName { width: 100%; }
-    .modal-btn { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--modal-text); padding: 10px 20px; border-radius: 10px; font-size: 1em; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+    .modal-btn { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--modal-text); padding: 10px 20px; border-radius: 10px; font-size: 1em; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
     .modal-btn:hover { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); }
     .modal-btn:active { transform: translateY(0); box-shadow: none; }
     .modal-btn.danger { background-color: rgba(231, 76, 60, 0.5); }
     .modal-btn.danger:hover { background-color: rgba(231, 76, 60, 0.7); }
-    .modal-btn.primary { background-color: rgba(52, 152, 219, 0.7); color: white; }
-    .modal-btn.primary:hover { background-color: rgba(52, 152, 219, 0.9); }
     .flowchart-node-html-wrapper { overflow: visible; }
     .flowchart-node-html { background-color: transparent; border: 1px solid var(--glass-border); box-shadow: var(--modal-strong-shadow); border-radius: 18px; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 8px; box-sizing: border-box; color: var(--node-text-fill); text-align: center; cursor: move; overflow: hidden; transition: background-color 0.3s ease, border-color 0.3s ease; }
     .flowchart-node-html.dragging { transition: none !important; }
     .node-name-html { font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); word-break: break-word; flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
     .task-count-pill-html { background: var(--task-count-rect-bg); color: var(--task-count-text-fill); padding: 4px 10px; border-radius: 14px; font-weight: 600; font-size: 0.9em; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); border: 1px solid var(--task-count-border); white-space: nowrap; margin-bottom: auto; }
     .priority-indicator { font-size: 0.8em; line-height: 1; margin-top: auto; align-self: flex-end; padding: 4px; }
-    #userGuideModal .modal-content ul {list-style: none; padding: 0; text-align: left;}
+    #userGuideModal .modal-content ul {list-style: none; padding: 0;}
     #userGuideModal .modal-content a { color: var(--modal-text); text-decoration: underline; }
     .modal-content h2, #userGuideModal .modal-content h2 { font-size: 1.5em; margin-bottom: 1em; }
-    .modal-content h3, #userGuideModal .modal-content h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-size: 1.15em; color: var(--modal-text); text-align: left;}
+    .modal-content h3, #userGuideModal .modal-content h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-size: 1.15em; color: var(--modal-text); }
     .modal-content li, #userGuideModal .modal-content li { margin-bottom: 0.7em; line-height: 1.6; }
     #userGuideModal .modal-content li strong { font-weight: 600; color: var(--modal-text); }
     .modal-content p, #userGuideModal .modal-content p { margin-bottom: 1em; line-height: 1.6; }
@@ -138,26 +129,21 @@
 
 <body>
   <header>
-    <h1>
-      <img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> 
-      FlowChart Manager
-      <span class="demo-badge">Demo & Tutorial</span>
-      <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…" readonly/>
-    </h1>
+    <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
     <nav>
       <button id="nodeSizeIncreaseBtn" data-tooltip-text="Increase Node Size"><i class="fas fa-plus"></i></button>
       <button id="nodeSizeDecreaseBtn" data-tooltip-text="Decrease Node Size"><i class="fas fa-minus"></i></button>
       <button id="aiAssistantBtn" data-tooltip-text="AI Assistant (turn off 'Full Screen')"><i class="fas fa-lightbulb"></i></button>
       <button id="userGuideBtn" data-tooltip-text="User Guide"><i class="fas fa-book-open"></i></button>
       <button id="colorLegendBtn" data-tooltip-text="Color Legend"><i class="fas fa-palette"></i></button>
-      <button id="templateBtn" data-tooltip-text="Load a Template" style="display: none;"><i class="fas fa-file-alt"></i></button>
-      <button id="projectDescBtn" data-tooltip-text="Project Description"><i class="fas fa-info-circle"></i></button>
+      <button id="templateBtn" data-tooltip-text="Load a Template"><i class="fas fa-file-alt"></i></button>
+      <button id="projectDescBtn" style="display: none;" data-tooltip-text="Project Description"><i class="fas fa-info-circle"></i></button>
       <button id="addConnectorBtn" data-tooltip-text="Add Connector"><i class="fas fa-link"></i></button>
-      <button id="saveBtn" data-tooltip-text="Save Flowchart (Demo Mode)"><i class="fas fa-floppy-disk"></i></button>
+      <button id="saveBtn" data-tooltip-text="Save Flowchart"><i class="fas fa-floppy-disk"></i></button>
       <button id="shareBtn" data-tooltip-text="Share"><i class="fas fa-share-alt"></i></button>
       <input type="file" id="fileInput" accept=".json" style="display: none;" />
-      <button id="uploadBtn" data-tooltip-text="Upload Flowchart" style="display: none;"><i class="fas fa-upload"></i></button>
-      <div id="fileNameDisplay">Demo: Project Phoenix</div>
+      <button id="uploadBtn" data-tooltip-text="Upload Flowchart"><i class="fas fa-upload"></i></button>
+      <div id="fileNameDisplay">No file loaded</div>
       <button id="themeToggleBtn" data-tooltip-text="Toggle Theme"><i class="fas fa-moon"></i></button>
     </nav>
   </header>
@@ -165,26 +151,11 @@
   <div id="color-legend-display"></div>
 
   <div id="flowchartContainer">
-    <div id="banner-container"><iframe src="https://view.genially.com/6851f73b42060080e8ea8922" allowtransparency="true" scrolling="no" frameborder="0"></iframe></div>
+    <div id="banner-container"><iframe src="https://transcendence.media/SmartWealth-Banner" allowtransparency="true" scrolling="no" frameborder="0"></iframe></div>
     <svg id="flowchart"></svg>
   </div>
 
   <div id="modal" class="modal"><div class="modal-content"><span class="close-button" id="closeModal">×</span><h2>Task Details</h2><form id="taskForm"><label>Task Name: <textarea id="taskName" required></textarea></label><label>Responsible: <input type="text" id="responsible" /></label><label>Status:<select id="status"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></label><label>Deadline: <input type="date" id="deadline" /></label><label>Priority:<select id="priority"><option value="Low">Low</option><option value="Normal">Normal</option><option value="High">High</option></select></label><label>Action Description (Sub-tasks):</label><table id="taskTable"><thead><tr><th style="width: 30px;">✓</th><th>Task</th></tr></thead><tbody></tbody></table><button type="button" id="addTaskRowBtn" class="modal-btn">Add Task</button><label>Node Color:</label><input type="hidden" id="nodeColor" /><div class="color-panel"><div class="color-swatch" data-color="#e74c3c"></div><div class="color-swatch" data-color="#f1c40f"></div><div class="color-swatch" data-color="#2ecc71"></div><div class="color-swatch" data-color="#3498db"></div><div class="color-swatch" data-color="#9b59b6"></div><div class="color-swatch" data-color="#34495e"></div></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Node</button><button type="button" class="modal-btn" id="addNodeBtn">Add Child Node</button></div><div style="text-align: center; margin-top: 20px;"><button type="button" id="deleteNodeBtn" class="modal-btn danger">Delete Node</button></div></form></div></div>
-  
-  <div id="demoSaveModal" class="modal">
-    <div class="modal-content">
-      <span class="close-button" id="closeDemoSaveModal">×</span>
-      <h2>🚫 Demo Version - Save Not Available</h2>
-      <p>As a Demo, this version cannot save or export flowcharts.</p>
-      <p><strong>To purchase the full FlowChart Manager template with saving capabilities:</strong></p>
-      <div style="text-align: center; margin: 2rem 0;">
-        <a href="https://www.socialeap.net/shop-flowchart" target="_blank" class="modal-btn primary">
-          Visit Our Product Page
-        </a>
-      </div>
-    </div>
-  </div>
-  
   <div id="templateModal" class="modal"><div class="modal-content"><span class="close-button" id="closeTemplateModal">×</span><h2>Select Template</h2><div style="display: flex; flex-direction: column; gap: 1rem;"><button class="modal-btn" data-template="prototype">Prototype Development</button><button class="modal-btn" data-template="vendor">Vendor Outreach</button><button class="modal-btn" data-template="marketing">Marketing Campaign</button></div></div></div>
   <div id="taskTextPopup" class="modal"><div class="modal-content"><span class="close-button" id="closeTaskPopup">×</span><p id="taskFullText" style="white-space: pre-wrap; max-height: 60vh; overflow-y: auto;"></p><button id="deleteTaskBtn" class="modal-btn danger">Delete Task</button></div></div>
   <div id="userGuideModal" class="modal">
@@ -232,12 +203,10 @@
   <div id="tooltip"></div>
 
   <script>
-    const DEMO_DATA = { "flowchartName": "Project Phoenix: Product Launch", "projectDescription": { "summary": "This template outlines a comprehensive project for launching a new product, segmenting it into key phases and detailing the essential tasks within each phase. It's designed to help teams visualize the entire product lifecycle from conceptualization to post-launch review, ensuring critical dependencies are identified and responsibilities are clear. The template uses different colors to distinguish between high-level phases, detailed tasks, and milestones.", "generatedDate": "2025-06-16 09:09:41 PM EDT" }, "nodes": [{ "id": "phase-1-initiation", "name": "Phase 1: Project Initiation", "status": "Completed", "responsible": "Project Lead", "deadline": "2025-01-15", "priority": "High", "actionDescription": "[{\"completed\":true,\"task\":\"Define project scope and objectives\"},{\"completed\":true,\"task\":\"Assemble core project team\"}]", "color": "#3498db", "x": 879.5, "y": 219.6 }, { "id": "task-1-1-kickoff", "name": "Task: Conduct Project Kick-off Meeting", "status": "Completed", "responsible": "Project Lead", "deadline": "2025-01-10", "priority": "High", "actionDescription": "[{\"completed\":true,\"task\":\"Set initial agenda\"},{\"completed\":true,\"task\":\"Invite stakeholders\"},{\"completed\":true,\"task\":\"Distribute project brief\"}]", "color": "#2ecc71", "x": 694.8, "y": 572.0 }, { "id": "task-1-2-req", "name": "Task: Gather Initial Requirements", "status": "Completed", "responsible": "Product Team", "deadline": "2025-01-15", "priority": "High", "actionDescription": "[{\"completed\":true,\"task\":\"Interview key users\"},{\"completed\":true,\"task\":\"Document functional requirements\"}]", "color": "#2ecc71", "x": 906.9, "y": 574.9 }, { "id": "milestone-1-scope", "name": "Milestone: Scope Approved Milestone", "status": "Completed", "responsible": "Steering Committee", "deadline": "2025-01-20", "priority": "High", "actionDescription": "[{\"completed\":true,\"task\":\"Formal scope sign-off\"}]", "color": "#9b59b6", "x": 909.2, "y": 1032.7 }, { "id": "phase-2-planning", "name": "Phase 2: Planning & Design", "status": "In Progress", "responsible": "Project Team", "deadline": "2025-03-01", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Develop detailed project plan\"},{\"completed\":false,\"task\":\"Create UX/UI designs\"}]", "color": "#3498db", "x": 1206.5, "y": 222.1 }, { "id": "task-2-1-plan", "name": "Task: Develop Detailed Project Plan", "status": "In Progress", "responsible": "Project Lead", "deadline": "2025-02-10", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Breakdown tasks into sprints\"},{\"completed\":false,\"task\":\"Allocate resources\"},{\"completed\":false,\"task\":\"Define timelines\"}]", "color": "#f1c40f", "x": 1175.6, "y": 580.3 }, { "id": "task-2-2-design", "name": "Task: Create UX/UI Designs", "status": "In Progress", "responsible": "Design Team", "deadline": "2025-02-28", "priority": "Normal", "actionDescription": "[{\"completed\":false,\"task\":\"Wireframe user flows\"},{\"completed\":false,\"task\":\"Design mockups\"},{\"completed\":false,\"task\":\"Conduct usability testing\"}]", "color": "#f1c40f", "x": 1368.5, "y": 583.7 }, { "id": "milestone-2-design", "name": "Milestone: Design Approved Milestone", "status": "Not Started", "responsible": "Product Owner", "deadline": "2025-03-05", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Review and approve final designs\"}]", "color": "#9b59b6", "x": 1349.9, "y": 1027.2 }, { "id": "phase-3-dev", "name": "Phase 3: Development & QA", "status": "Not Started", "responsible": "Engineering Lead", "deadline": "2025-05-15", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Develop core features\"},{\"completed\":false,\"task\":\"Perform rigorous testing\"}]", "color": "#3498db", "x": 1687.9, "y": 222.1 }, { "id": "task-3-1-backend", "name": "Task: Backend Development", "status": "Not Started", "responsible": "Backend Team", "deadline": "2025-04-30", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Set up APIs\"},{\"completed\":false,\"task\":\"Database integration\"},{\"completed\":false,\"task\":\"Server-side logic\"}]", "color": "#e74c3c", "x": 1627.4, "y": 582.8 }, { "id": "task-3-2-frontend", "name": "Task: Frontend Development", "status": "Not Started", "responsible": "Frontend Team", "deadline": "2025-05-10", "priority": "Normal", "actionDescription": "[{\"completed\":false,\"task\":\"Build user interface\"},{\"completed\":false,\"task\":\"Integrate with backend APIs\"}]", "color": "#e74c3c", "x": 1848.0, "y": 578.5 }, { "id": "task-3-3-qa", "name": "Task: Quality Assurance Testing", "status": "Not Started", "responsible": "QA Team", "deadline": "2025-05-15", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Develop test cases\"},{\"completed\":false,\"task\":\"Execute unit tests\"},{\"completed\":false,\"task\":\"Perform integration tests\"},{\"completed\":false,\"task\":\"Conduct UAT with stakeholders\"}]", "color": "#e74c3c", "x": 1742.5, "y": 793.7 }, { "id": "milestone-3-devcomplete", "name": "Milestone: Development Complete Milestone", "status": "Not Started", "responsible": "Engineering Lead", "deadline": "2025-05-20", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"All features developed and tested\"}]", "color": "#9b59b6", "x": 1901.0, "y": 1024.5 }, { "id": "phase-4-launch", "name": "Phase 4: Launch & Post-Launch", "status": "Not Started", "responsible": "Marketing Lead", "deadline": "2025-06-30", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Execute marketing campaign\"},{\"completed\":false,\"task\":\"Monitor post-launch performance\"}]", "color": "#3498db", "x": 2125.8, "y": 217.6 }, { "id": "task-4-1-marketing", "name": "Task: Prepare & Execute Marketing Campaign", "status": "Not Started", "responsible": "Marketing Team", "deadline": "2025-06-01", "priority": "Normal", "actionDescription": "[{\"completed\":false,\"task\":\"Create launch content\"},{\"completed\":false,\"task\":\"Plan social media campaign\"},{\"completed\":false,\"task\":\"Set up advertising channels\"}]", "color": "#e74c3c", "x": 2145.2, "y": 583.5 }, { "id": "task-4-2-deployment", "name": "Task: Final Deployment", "status": "Not Started", "responsible": "DevOps", "deadline": "2025-06-10", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Prepare production environment\"},{\"completed\":false,\"task\":\"Execute deployment script\"}]", "color": "#e74c3c", "x": 2401.6, "y": 583.2 }, { "id": "milestone-4-launchday", "name": "Milestone: Product Launch Day!", "status": "Not Started", "responsible": "All Teams", "deadline": "2025-06-15", "priority": "High", "actionDescription": "[{\"completed\":false,\"task\":\"Execute launch plan\"},{\"completed\":false,\"task\":\"Monitor systems closely\"}]", "color": "#9b59b6", "x": 2200.4, "y": 1025.9 }, { "id": "task-4-3-review", "name": "Task: Post-Launch Review & Iteration", "status": "Not Started", "responsible": "Project Lead", "deadline": "2025-06-30", "priority": "Normal", "actionDescription": "[{\"completed\":false,\"task\":\"Gather user feedback\"},{\"completed\":false,\"task\":\"Analyze performance metrics\"},{\"completed\":false,\"task\":\"Plan next iterations\"}]", "color": "#e74c3c", "x": 2452.9, "y": 1181.0 }], "links": [{ "source": "phase-1-initiation", "target": "task-1-1-kickoff" }, { "source": "phase-1-initiation", "target": "task-1-2-req" }, { "source": "task-1-1-kickoff", "target": "milestone-1-scope" }, { "source": "task-1-2-req", "target": "milestone-1-scope" }, { "source": "milestone-1-scope", "target": "phase-2-planning" }, { "source": "phase-2-planning", "target": "task-2-1-plan" }, { "source": "phase-2-planning", "target": "task-2-2-design" }, { "source": "task-2-1-plan", "target": "milestone-2-design" }, { "source": "task-2-2-design", "target": "milestone-2-design" }, { "source": "milestone-2-design", "target": "phase-3-dev" }, { "source": "phase-3-dev", "target": "task-3-1-backend" }, { "source": "phase-3-dev", "target": "task-3-2-frontend" }, { "source": "task-3-1-backend", "target": "task-3-3-qa" }, { "source": "task-3-2-frontend", "target": "task-3-3-qa" }, { "source": "task-3-3-qa", "target": "milestone-3-devcomplete" }, { "source": "milestone-3-devcomplete", "target": "phase-4-launch" }, { "source": "phase-4-launch", "target": "task-4-1-marketing" }, { "source": "phase-4-launch", "target": "task-4-2-deployment" }, { "source": "task-4-1-marketing", "target": "milestone-4-launchday" }, { "source": "task-4-2-deployment", "target": "milestone-4-launchday" }, { "source": "milestone-4-launchday", "target": "task-4-3-review" }], "colorLegend": { "#3498db": "Phase Nodes (High-Level Stages)", "#2ecc71": "Completed Tasks", "#f1c40f": "In-Progress Tasks", "#e74c3c": "Not Started / Critical Tasks", "#9b59b6": "Key Milestones" } };
-
     let selectedNode = null, selectedLink = null,
-      data = JSON.parse(JSON.stringify(DEMO_DATA)),
+      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {} },
       simulation, svg, nodeGroup, linkGroup, mainZoomGroup,
-      isInitialLayout = true;
+      isInitialLayout = true; // Flag to track the first layout
     const BASE_NODE_DIMENSION = 160;
     let currentNodeSizeFactor = 1.0;
     const MIN_NODE_SIZE_FACTOR = 0.5, MAX_NODE_SIZE_FACTOR = 1.5, NODE_SIZE_STEP = 0.1;
@@ -262,25 +231,54 @@
         mainZoomGroup = svg.append('g').attr('class', 'zoom-group');
         linkGroup = mainZoomGroup.append('g').attr('class', 'links');
         nodeGroup = mainZoomGroup.append('g').attr('class', 'nodes');
-        
+        const zoom = d3.zoom().filter(event => !event.target.closest('.node-group')).on('zoom', (event) => { mainZoomGroup.attr('transform', event.transform); });
+        svg.call(zoom).on("dblclick.zoom", null);
         simulation = d3.forceSimulation()
             .force('charge', d3.forceManyBody().strength(-1800 * (BASE_NODE_DIMENSION / 160)))
             .force('collide', d3.forceCollide().radius((BASE_NODE_DIMENSION * 0.55) + 25).strength(0.9))
             .force('center', d3.forceCenter(vW / 2, vH / 2));
-            
-        const zoom = d3.zoom()
-            .filter(event => !event.target.closest('.node-group'))
-            .on('zoom', (event) => {
-                mainZoomGroup.attr('transform', event.transform);
-            });
-        svg.call(zoom).on("dblclick.zoom", null);
     }
+
+    // START: REVISED D3 DRAG BEHAVIOR
+    const drag = d3.drag()
+        .on('start', function(event, d) {
+            // Prevent drag from interfering with connector mode clicks
+            if (connectorMode) return;
+
+            // Re-enable the simulation's force on the active node during drag
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            
+            // Store the original position
+            d.fx = d.x;
+            d.fy = d.y;
+
+            d3.select(this).select('.flowchart-node-html').classed('dragging', true);
+        })
+        .on('drag', function(event, d) {
+            if (connectorMode) return;
+            
+            // D3's event.x and event.y are already correctly transformed.
+            d.fx = event.x;
+            d.fy = event.y;
+        })
+        .on('end', function(event, d) {
+            if (connectorMode) return;
+
+            // Let the simulation cool down
+            if (!event.active) simulation.alphaTarget(0);
+
+            // Keep the node fixed where the user drops it.
+            // If we wanted the simulation to affect it again, we would set d.fx = null;
+
+            d3.select(this).select('.flowchart-node-html').classed('dragging', false);
+        });
+    // END: REVISED D3 DRAG BEHAVIOR
     
-    function ticked() {
+    const tick = () => {
         const currentScaledDimension = BASE_NODE_DIMENSION * currentNodeSizeFactor;
-        nodeGroup.selectAll('g.node-group')
-            .attr('transform', d => `translate(${d.x},${d.y})`);
-        
+        // The simulation now handles the transform updates, so this manual call is less critical
+        // but can remain for immediate feedback if needed.
+        nodeGroup.selectAll('g.node-group').attr('transform', d => `translate(${d.fx || d.x || 0},${d.fy || d.y || 0})`);
         linkGroup.selectAll('line.link').each(function(d) {
             if (d.source && d.target) {
                 const sourcePoint = getIntersectionPoint(d.source, d.target, currentScaledDimension, currentScaledDimension);
@@ -290,28 +288,12 @@
         });
     }
 
-    const drag = d3.drag()
-        .on('start', function(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-            d3.select(this).classed('dragging', true);
-        })
-        .on('drag', function(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-        })
-        .on('end', function(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
-            d3.select(this).classed('dragging', false);
-        });
-    
     function update() {
         if (!svg || !simulation) return;
         updateLegendDisplay();
+        const currentScaledDimension = BASE_NODE_DIMENSION * currentNodeSizeFactor;
         
-        simulation.nodes(data.nodes).on("tick", ticked);
-
+        simulation.nodes(data.nodes);
         if(data.links.length > 0) { 
             simulation.force('link', d3.forceLink(data.links).id(d => d.id).distance(250).strength(0.05));
         } else {
@@ -319,11 +301,16 @@
         }
 
         if (isInitialLayout) {
+            simulation.stop();
+            for (let i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
+                simulation.tick();
+            }
+            // Pin all nodes after the initial layout
             data.nodes.forEach(d => {
                 d.fx = d.x;
                 d.fy = d.y;
             });
-            isInitialLayout = false;
+            isInitialLayout = false; // Set flag to false after first run
         }
 
         let link = linkGroup.selectAll('line.link').data(data.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
@@ -341,35 +328,44 @@
         
         node = nodeEnter.merge(node);
         
+        // START: REVISED NODE CLICK HANDLER
         node.on('click', (event, d) => {
+            // This is a d3 event property. If true, it means a drag gesture just happened.
             if (event.defaultPrevented) return; 
+
             event.stopPropagation();
+
             if (connectorMode) {
                 if (!connectorStartNode) {
                     connectorStartNode = d;
+                    // Add visual feedback for the user
                     d3.select(event.currentTarget).select('.flowchart-node-html').style('outline', '3px solid var(--link-selected-color)');
                 } else if (d.id !== connectorStartNode.id) {
+                    // Remove visual feedback from start node
                     nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
+
                     const linkExists = data.links.some(l => 
                         ((l.source.id || l.source) === connectorStartNode.id && (l.target.id || l.target) === d.id) ||
                         ((l.source.id || l.source) === d.id && (l.target.id || l.target) === connectorStartNode.id)
                     );
                     if (!linkExists) {
                         data.links.push({ source: connectorStartNode.id, target: d.id });
-                        simulation.force('link').links(data.links);
+                        isInitialLayout = false; 
+                        update();
                     }
+                    // Reset connector mode
                     connectorMode = false;
                     connectorStartNode = null;
                     g('addConnectorBtn').classList.remove('active');
                     g('flowchart').style.cursor = 'default';
-                    simulation.alpha(0.3).restart();
                 }
             } else {
+                // This is a regular node click to open the modal
                 nodeClick(event, d);
             }
         });
+        // END: REVISED NODE CLICK HANDLER
 
-        const currentScaledDimension = BASE_NODE_DIMENSION * currentNodeSizeFactor;
         node.select('foreignObject')
             .attr('width', currentScaledDimension).attr('height', currentScaledDimension)
             .attr('x', -currentScaledDimension / 2).attr('y', -currentScaledDimension / 2);
@@ -395,13 +391,14 @@
             if (totC > 0) { pillDiv.text(`✓ ${compC}/${totC}`).style('display', 'block'); } 
             else { pillDiv.style('display', 'none'); }
         });
-        
-        simulation.alpha(0.3).restart();
+
+        simulation.on('tick', tick);
+        tick(); 
     }
 
     function getIntersectionPoint(sourceNode, targetNode, width, height) {
-        const sx = sourceNode.x, sy = sourceNode.y;
-        const tx = targetNode.x, ty = targetNode.y;
+        const sx = sourceNode.fx || sourceNode.x, sy = sourceNode.fy || sourceNode.y;
+        const tx = targetNode.fx || targetNode.x, ty = targetNode.fy || targetNode.y;
         const dx = tx - sx, dy = ty - sy;
         if (dx === 0 && dy === 0) { return { x: sx, y: sy }; }
         const halfWidth = width / 2, halfHeight = height / 2;
@@ -416,27 +413,21 @@
     }
     
     function openAIAssistant() { const url = 'https://chatgpt.com/g/g-678c450b02988191b07d47c7a5bd9d4a-flow-chart-assistant'; const sW = window.screen.availWidth, sH = window.screen.availHeight, bS = Math.min(sW, sH); const pW = Math.floor(bS * 0.45), pH = Math.floor(bS * 0.55), l = Math.floor((sW - pW) / 2), t = Math.floor((sH - pH) / 2); window.open(url, 'FlowchartAIAssistant', `width=${pW},height=${pH},left=${l},top=${t},resizable=yes,scrollbars=yes`); }
+    function placeNodesDiagonally() { const vW = parseFloat(svg.attr('viewBox').split(' ')[2]); const iX = vW / 2, iY = 150, cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor; const hS = cSD * 1.75, vS = cSD * 1.25; data.nodes.forEach((n, i) => { if (n.x == null) { n.x = iX + (i % 3 - 1) * hS + (Math.random() * 50 - 25); } if (n.y == null) { n.y = iY + Math.floor(i / 3) * vS + (Math.random() * 50 - 25); } }); }
     function addTaskRow(t) { const tb = g('taskTable').querySelector('tbody'), tr = document.createElement('tr'); tr.addEventListener('click', function () { document.querySelectorAll('#taskTable tbody tr').forEach((r) => r.classList.remove('selectedTaskRow')); this.classList.add('selectedTaskRow'); }); const tdC = document.createElement('td'), cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t && t.completed; tdC.appendChild(cb); const tdT = document.createElement('td'), ti = document.createElement('textarea'); ti.classList.add('task-detail-textarea'); ti.value = t && t.task ? t.task : ''; ti.rows = 1; ti.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; }); ti.addEventListener('dblclick', (e) => { e.stopPropagation(); tr.classList.add('selectedTaskRow'); showTaskPopup(ti.value); }); tdT.appendChild(ti); tr.appendChild(tdC); tr.appendChild(tdT); tb.appendChild(tr); ti.dispatchEvent(new Event('input')); }
     function populateTaskTable(str) { const tb = g('taskTable').querySelector('tbody'); tb.innerHTML = ''; let arr = []; try { arr = JSON.parse(str); if (!Array.isArray(arr)) arr = str.trim() ? [{ completed: false, task: str }] : []; } catch (e) { arr = str.trim() ? [{ completed: false, task: str }] : []; } if (Array.isArray(str)) arr = str; if (arr.length > 0) arr.forEach((t) => addTaskRow(t)); else addTaskRow({}); }
     function showTaskPopup(txt) { g('taskFullText').textContent = txt; g('taskTextPopup').style.display = 'block'; }
     function updateProjectDescButton() { const hasDesc = data.projectDescription && data.projectDescription.summary.trim().length > 0; g('projectDescBtn').style.display = hasDesc ? 'inline-flex' : 'none'; }
     function nodeClick(ev, d) { ev.stopPropagation(); selectedNode = d; g('taskName').value = d.name || ''; g('responsible').value = d.responsible || ''; g('status').value = d.status || 'Not Started'; g('deadline').value = d.deadline || ''; g('priority').value = d.priority || 'Normal'; populateTaskTable(d.actionDescription || ''); g('nodeColor').value = d.color || ''; document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch')); if (d.color) { const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`); if (sS) sS.classList.add('selected-swatch'); } g('modal').style.display = 'block'; }
-    
-    // Demo save function - shows popup instead of saving
-    function demoSaveToFile() { 
-        g('demoSaveModal').style.display = 'block'; 
-    }
-    
-    function loadFromFile(f) { 
-        alert('File upload is disabled in demo mode.'); 
-    }
-    
-    function loadTemplate(tmpl) { data.flowchartName = tmpl.charAt(0).toUpperCase() + tmpl.slice(1) + ' Template'; g('flowchartNameInput').value = data.flowchartName; data.links = []; data.projectDescription = { summary: '', generatedDate: '' }; data.colorLegend = {}; updateProjectDescButton(); switch (tmpl) { case 'prototype': data.nodes = [{ id: '1', name: 'Design System Setup', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'User Auth Development', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Real-time Collab Testing', status: 'Not Started', color: '#e74c3c' }]; break; case 'vendor': data.nodes = [{ id: '1', name: 'Identify Vendors', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Conduct Outreach', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Select Final Vendor', status: 'Not Started', color: '#e74c3c' }]; break; case 'marketing': data.nodes = [{ id: '1', name: 'Market Research', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Develop Strategy', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Launch Campaign', status: 'Not Started', color: '#e74c3c' }]; break; default: data.nodes = [{ id: 'root-1', name: 'Start New Project', status: 'Not Started', color: '#3498db', x: 300, y: 150, fx: 300, fy: 150 }]; data.flowchartName = 'New Flowchart'; g('flowchartNameInput').value = data.flowchartName; } data.nodes.forEach(n => { n.actionDescription = '[]'; n.fx = null; n.fy = null; }); isInitialLayout = true; update(); }
+    function saveToFile() { try { data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; const expD = { flowchartName: data.flowchartName, projectDescription: data.projectDescription, nodes: data.nodes.map(n => ({ id: n.id, name: n.name, status: n.status, responsible: n.responsible, deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy })), links: data.links.map(l => ({ source: l.source.id || l.source, target: l.target.id || l.target })), colorLegend: data.colorLegend }; const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } }
+    function normalizeNodePositions(nodes) { if (!nodes || nodes.length === 0) return; const vB = svg.attr('viewBox').split(' ').map(parseFloat); const canvasWidth = vB[2]; const paddingTop = 200; let minX = Infinity, maxX = -Infinity, minY = Infinity; nodes.forEach(n => { if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x; if (n.y < minY) minY = n.y; }); const layoutWidth = maxX - minX; const offsetX = (canvasWidth / 2) - (minX + layoutWidth / 2); const offsetY = paddingTop - minY; nodes.forEach(n => { n.x += offsetX; if (n.fx != null) n.fx += offsetX; n.y += offsetY; if (n.fy != null) n.fy += offsetY; }); }
+    function loadFromFile(f) { if (!f) { alert('No file.'); return; } const r = new FileReader(); r.onload = (e) => { try { const fD = JSON.parse(e.target.result); if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) { data.flowchartName = fD.flowchartName || 'Untitled'; g('flowchartNameInput').value = data.flowchartName; data.projectDescription = fD.projectDescription || { summary: '', generatedDate: '' }; updateProjectDescButton(); data.colorLegend = fD.colorLegend || {}; data.nodes = fD.nodes.map(n => ({ ...n, x: n.x, y: n.y, fx: n.fx !== undefined ? n.fx : n.x, fy: n.fy !== undefined ? n.fy : n.y })); data.links = Array.isArray(fD.links) ? fD.links : []; g('fileNameDisplay').innerText = `Loaded: ${f.name}`; normalizeNodePositions(data.nodes); isInitialLayout = true; update(); } else alert('Invalid format.'); } catch (err) { alert('Parse error.'); console.error('Load file error:', err); } }; r.onerror = () => alert('Read error.'); r.readAsText(f); }
+    function loadTemplate(tmpl) { data.flowchartName = tmpl.charAt(0).toUpperCase() + tmpl.slice(1) + ' Template'; g('flowchartNameInput').value = data.flowchartName; data.links = []; data.projectDescription = { summary: '', generatedDate: '' }; data.colorLegend = {}; updateProjectDescButton(); switch (tmpl) { case 'prototype': data.nodes = [{ id: '1', name: 'Design System Setup', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'User Auth Development', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Real-time Collab Testing', status: 'Not Started', color: '#e74c3c' }]; break; case 'vendor': data.nodes = [{ id: '1', name: 'Identify Vendors', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Conduct Outreach', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Select Final Vendor', status: 'Not Started', color: '#e74c3c' }]; break; case 'marketing': data.nodes = [{ id: '1', name: 'Market Research', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Develop Strategy', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Launch Campaign', status: 'Not Started', color: '#e74c3c' }]; break; default: data.nodes = [{ id: 'root-1', name: 'Start New Project', status: 'Not Started', color: '#3498db', x: 300, y: 150, fx: 300, fy: 150 }]; data.flowchartName = 'New Flowchart'; g('flowchartNameInput').value = data.flowchartName; } data.nodes.forEach(n => { n.actionDescription = '[]'; n.fx = null; n.fy = null; }); placeNodesDiagonally(); isInitialLayout = true; update(); }
     function linkClickHandler(event, d) { event.stopPropagation(); selectedLink = d; linkGroup.selectAll('line.link').classed('selected', l => l === selectedLink); g('deleteLinkModal').style.display = 'block'; }
     function openColorLegendModal() { const container = g('color-legend-entries'); container.innerHTML = ''; const uniqueColors = [...new Set(data.nodes.map(n => n.color).filter(c => c))]; const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); uniqueColors.forEach(color => { const entry = document.createElement('div'); entry.className = 'legend-entry'; const swatch = document.createElement('div'); swatch.className = 'legend-color-swatch'; swatch.style.backgroundColor = hexToRgba(color, opacity); const input = document.createElement('input'); input.type = 'text'; input.placeholder = `Description for ${color}`; input.dataset.color = color; input.value = data.colorLegend[color] || ''; entry.appendChild(swatch); entry.appendChild(input); container.appendChild(entry); }); g('colorLegendModal').style.display = 'block'; }
     function saveColorLegend(event) { event.preventDefault(); document.querySelectorAll('#color-legend-entries input').forEach(input => { const color = input.dataset.color, desc = input.value.trim(); if (desc) data.colorLegend[color] = desc; else delete data.colorLegend[color]; }); g('colorLegendModal').style.display = 'none'; updateLegendDisplay(); }
     function updateLegendDisplay() { const container = g('color-legend-display'); container.innerHTML = ''; const items = Object.entries(data.colorLegend); const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (items.length > 0) { items.forEach(([color, description]) => { const item = document.createElement('div'); item.className = 'legend-display-item'; const swatch = document.createElement('div'); swatch.className = 'legend-display-color'; swatch.style.backgroundColor = hexToRgba(color, opacity); const text = document.createElement('span'); text.textContent = description; item.appendChild(swatch); item.appendChild(text); container.appendChild(item); }); container.classList.add('visible'); } else { container.classList.remove('visible'); } }
-    function createNode(pN) { const nId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`; let iX, iY; const vB = svg.attr('viewBox').split(' '), vW = parseFloat(vB[2]), vH = parseFloat(vB[3]), cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor; if (pN && typeof pN.x === 'number') { iX = pN.x + (Math.random() * 100 - 50); iY = pN.y + cSD * 0.9; } else { iX = vW / 2 + (Math.random() * 200 - 100); iY = vH / 3 + (Math.random() * 100 - 50); } iX = Math.max(cSD / 2, Math.min(iX, vW - cSD / 2)); iY = Math.max(cSD / 2, Math.min(iY, vH - cSD / 2)); const nN = { id: nId, name: 'New Task Node', status: 'Not Started', responsible: '', deadline: '', priority: 'Normal', actionDescription: '[]', color: null, x: iX, y: iY, fx: iX, fy: iY }; data.nodes.push(nN); isInitialLayout = false; update(); return nN; }
+    function createNode(pN) { const nId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`; let iX, iY; const vB = svg.attr('viewBox').split(' '), vW = parseFloat(vB[2]), vH = parseFloat(vB[3]), cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor; if (pN && typeof pN.x === 'number') { iX = pN.x + (Math.random() * 100 - 50); iY = pN.y + cSD * 0.9; } else { iX = vW / 2 + (Math.random() * 200 - 100); iY = vH / 3 + (Math.random() * 100 - 50); } iX = Math.max(cSD / 2, Math.min(iX, vW - cSD / 2)); iY = Math.max(cSD / 2, Math.min(iY, vH - cSD / 2)); const nN = { id: nId, name: 'New Task Node', status: 'Not Started', responsible: '', deadline: '', priority: 'Normal', actionDescription: '[]', color: null, x: iX, y: iY, fx: iX, fy: iY }; data.nodes.push(nN); isInitialLayout = false; update(); }
     function updateNodeSizes() { if (!simulation) return; const sD = BASE_NODE_DIMENSION * currentNodeSizeFactor; simulation.force('collide').radius((sD * 0.55) + 25); simulation.force('charge').strength(-1800 * (sD / 160)); isInitialLayout = false; update(); }
     
     document.addEventListener('DOMContentLoaded', () => {
@@ -453,10 +444,6 @@
 
     function initializeApp() {
         initD3();
-        
-        g('flowchartNameInput').value = data.flowchartName;
-        updateProjectDescButton();
-        
         const tooltip = g('tooltip');
         if (tooltip) { document.querySelectorAll('nav button[data-tooltip-text]').forEach(button => { button.addEventListener('mouseenter', () => { tooltip.textContent = button.dataset.tooltipText; const rect = button.getBoundingClientRect(); tooltip.style.top = `${rect.bottom + 8}px`; tooltip.style.left = `${rect.left + rect.width / 2}px`; tooltip.classList.add('visible'); }); button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); }); }
         document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { const color = swatch.dataset.color, opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (color) swatch.style.backgroundColor = hexToRgba(color, opacity); });
@@ -479,15 +466,13 @@
             connectorStartNode = null; 
             addConnBtn.classList.toggle('active', connectorMode); 
             g('flowchart').style.cursor = connectorMode ? 'crosshair' : 'default'; 
+            // If connector mode is turned off, remove any lingering visual feedback
             if (!connectorMode) {
                 nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
             }
         });
         g('addNodeBtn').onclick = (e) => { e.preventDefault(); const nN = createNode(selectedNode); if (nN) { selectedNode = nN; nodeClick({ stopPropagation: () => {}, defaultPrevented: false }, nN); } };
-        
-        g('saveBtn').onclick = demoSaveToFile;
-        g('closeDemoSaveModal').onclick = () => g('demoSaveModal').style.display = 'none';
-        
+        g('saveBtn').onclick = saveToFile;
         g('uploadBtn').onclick = () => g('fileInput').click();
         g('fileInput').onchange = (e) => { if (e.target.files.length > 0) loadFromFile(e.target.files[0]); };
         g('userGuideBtn').onclick = () => { g('userGuideModal').style.display = 'block'; };
@@ -495,7 +480,7 @@
         g('shareBtn').onclick = () => g('shareModal').style.display = 'block';
         g('closeShareModal').onclick = () => g('shareModal').style.display = 'none';
         g('projectDescBtn').onclick = () => { const pd = data.projectDescription || {}; g('projectSummary').textContent = (pd.summary && pd.generatedDate) ? pd.summary : 'File does not contain a Project Description.'; g('projectGeneratedDate').textContent = (pd.summary && pd.generatedDate) ? `Generated: ${pd.generatedDate}` : ''; g('projectDescModal').style.display = 'block'; };
-        document.querySelectorAll('.modal .close-button').forEach((b) => { if (!['closeUserGuideModal','closeProjectDescModal','closeShareModal','closeColorLegendModal','closeDemoSaveModal'].includes(b.id)) b.onclick = (e) => { e.stopPropagation(); b.closest('.modal').style.display = 'none'; }; });
+        document.querySelectorAll('.modal .close-button').forEach((b) => { if (!['closeUserGuideModal','closeProjectDescModal','closeShareModal','closeColorLegendModal'].includes(b.id)) b.onclick = (e) => { e.stopPropagation(); b.closest('.modal').style.display = 'none'; }; });
         g('closeProjectDescModal').onclick = (e) => { e.stopPropagation(); g('projectDescModal').style.display = 'none'; };
         window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
         g('taskForm').onsubmit = (e) => { e.preventDefault(); if (selectedNode) { let tsks = []; g('taskTable').querySelectorAll('tbody tr').forEach((r) => { let chk = r.querySelector('input[type="checkbox"]'), txt = r.querySelector('textarea.task-detail-textarea'); if (txt && txt.value.trim() !== '') tsks.push({ completed: chk.checked, task: txt.value.trim() }); }); Object.assign(selectedNode, { name: g('taskName').value, responsible: g('responsible').value, status: g('status').value, deadline: g('deadline').value, priority: g('priority').value, actionDescription: JSON.stringify(tsks), color: g('nodeColor').value || null, }); selectedNode.fx = selectedNode.x; selectedNode.fy = selectedNode.y; isInitialLayout = false; update(); } g('modal').style.display = 'none'; };
@@ -505,9 +490,8 @@
         g('addTaskRowBtn').addEventListener('click', () => addTaskRow({}));
         g('deleteTaskBtn').addEventListener('click', () => { let sR = g('taskTable').querySelector('tbody tr.selectedTaskRow'); if (sR) sR.remove(); g('taskTextPopup').style.display = 'none'; });
         g('deleteNodeBtn').addEventListener('click', () => { if (selectedNode && confirm('Delete node?')) { const selectedId = selectedNode.id; data.nodes = data.nodes.filter((n) => n.id !== selectedId); data.links = data.links.filter(l => (l.source.id || l.source) !== selectedId && (l.target.id || l.target) !== selectedId); selectedNode = null; isInitialLayout = false; update(); } g('modal').style.display = 'none'; });
-        
-        isInitialLayout = true;
-        update();
+        g('flowchartNameInput').addEventListener('input', function () { data.flowchartName = this.value || 'Untitled'; });
+        if (data.nodes.length === 0) { isInitialLayout = true; loadTemplate('prototype'); } else { isInitialLayout = true; update(); }
     }
   </script>
 </body>
