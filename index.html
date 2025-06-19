@@ -224,32 +224,35 @@
     }
 
     // Helper function to get safe positioning coordinates within the visible area
-    function getVisibleCanvasArea() {
+    function getSafePositioningArea() {
+        // Use container dimensions and viewBox for reliable calculations
         const fcCont = g('flowchartContainer');
-        const containerRect = fcCont.getBoundingClientRect();
-        const headerHeight = document.querySelector('header').offsetHeight;
-        const legendDisplay = g('color-legend-display');
-        const legendHeight = legendDisplay.classList.contains('visible') ? legendDisplay.offsetHeight + 16 : 0; // 16px for margin
+        const containerWidth = fcCont.clientWidth;
+        const containerHeight = fcCont.clientHeight;
         
-        // Calculate the actual visible area accounting for UI elements
-        const topMargin = 200; // Safe margin from top to account for header + legend
-        const sideMargin = 150; // Safe margin from sides
-        const bottomMargin = 150; // Safe margin from bottom
+        // Get viewBox dimensions - these should be available after initD3()
+        const vB = svg.attr('viewBox').split(' ');
+        const viewBoxWidth = parseFloat(vB[2]);
+        const viewBoxHeight = parseFloat(vB[3]);
         
-        // Get viewBox dimensions
-        const vB = svg ? svg.attr('viewBox').split(' ') : ['0', '0', '2000', '1500'];
-        const vW = parseFloat(vB[2]);
-        const vH = parseFloat(vB[3]);
+        // Calculate safe margins as percentages of viewBox
+        const topMarginPercent = 0.15; // 15% from top
+        const sideMarginPercent = 0.1; // 10% from sides
+        const bottomMarginPercent = 0.1; // 10% from bottom
+        
+        const topMargin = viewBoxHeight * topMarginPercent;
+        const sideMargin = viewBoxWidth * sideMarginPercent;
+        const bottomMargin = viewBoxHeight * bottomMarginPercent;
         
         return {
             left: sideMargin,
-            right: vW - sideMargin,
+            right: viewBoxWidth - sideMargin,
             top: topMargin,
-            bottom: vH - bottomMargin,
-            centerX: vW / 2,
-            centerY: topMargin + (vH - topMargin - bottomMargin) / 2,
-            width: vW - 2 * sideMargin,
-            height: vH - topMargin - bottomMargin
+            bottom: viewBoxHeight - bottomMargin,
+            centerX: viewBoxWidth / 2,
+            centerY: topMargin + (viewBoxHeight - topMargin - bottomMargin) / 2,
+            width: viewBoxWidth - 2 * sideMargin,
+            height: viewBoxHeight - topMargin - bottomMargin
         };
     }
 
@@ -262,12 +265,14 @@
         linkGroup = mainZoomGroup.append('g').attr('class', 'links');
         nodeGroup = mainZoomGroup.append('g').attr('class', 'nodes');
         
-        const visibleArea = getVisibleCanvasArea();
+        // Use simple, reliable center calculation
+        const centerX = vW / 2;
+        const centerY = vH * 0.4; // Position at 40% down from top instead of middle
         
         simulation = d3.forceSimulation()
             .force('charge', d3.forceManyBody().strength(-1800 * (BASE_NODE_DIMENSION / 160)))
             .force('collide', d3.forceCollide().radius((BASE_NODE_DIMENSION * 0.55) + 25).strength(0.9))
-            .force('center', d3.forceCenter(visibleArea.centerX, visibleArea.centerY));
+            .force('center', d3.forceCenter(centerX, centerY));
             
         const zoom = d3.zoom()
             .filter(event => !event.target.closest('.node-group'))
@@ -494,8 +499,14 @@
         data.colorLegend = {}; 
         updateProjectDescButton(); 
         
-        // Get safe positioning area for template nodes
-        const visibleArea = getVisibleCanvasArea();
+        // Get current viewBox dimensions
+        const vB = svg.attr('viewBox').split(' ');
+        const vW = parseFloat(vB[2]);
+        const vH = parseFloat(vB[3]);
+        
+        // Position nodes in visible center area (40% down from top)
+        const centerX = vW / 2;
+        const centerY = vH * 0.4;
         const nodeSpacing = BASE_NODE_DIMENSION * 1.4; // Space between nodes
         
         switch (tmpl) { 
@@ -506,24 +517,24 @@
                         name: 'Design System Setup', 
                         status: 'Completed', 
                         color: '#2ecc71',
-                        x: visibleArea.centerX - nodeSpacing,
-                        y: visibleArea.centerY
+                        x: centerX - nodeSpacing,
+                        y: centerY
                     }, 
                     { 
                         id: '2', 
                         name: 'User Auth Development', 
                         status: 'In Progress', 
                         color: '#f1c40f',
-                        x: visibleArea.centerX,
-                        y: visibleArea.centerY
+                        x: centerX,
+                        y: centerY
                     }, 
                     { 
                         id: '3', 
                         name: 'Real-time Collab Testing', 
                         status: 'Not Started', 
                         color: '#e74c3c',
-                        x: visibleArea.centerX + nodeSpacing,
-                        y: visibleArea.centerY
+                        x: centerX + nodeSpacing,
+                        y: centerY
                     }
                 ]; 
                 break; 
@@ -534,24 +545,24 @@
                         name: 'Identify Vendors', 
                         status: 'Completed', 
                         color: '#2ecc71',
-                        x: visibleArea.centerX - nodeSpacing,
-                        y: visibleArea.centerY
+                        x: centerX - nodeSpacing,
+                        y: centerY
                     }, 
                     { 
                         id: '2', 
                         name: 'Conduct Outreach', 
                         status: 'In Progress', 
                         color: '#f1c40f',
-                        x: visibleArea.centerX,
-                        y: visibleArea.centerY
+                        x: centerX,
+                        y: centerY
                     }, 
                     { 
                         id: '3', 
                         name: 'Select Final Vendor', 
                         status: 'Not Started', 
                         color: '#e74c3c',
-                        x: visibleArea.centerX + nodeSpacing,
-                        y: visibleArea.centerY
+                        x: centerX + nodeSpacing,
+                        y: centerY
                     }
                 ]; 
                 break; 
@@ -562,24 +573,24 @@
                         name: 'Market Research', 
                         status: 'Completed', 
                         color: '#2ecc71',
-                        x: visibleArea.centerX - nodeSpacing,
-                        y: visibleArea.centerY
+                        x: centerX - nodeSpacing,
+                        y: centerY
                     }, 
                     { 
                         id: '2', 
                         name: 'Develop Strategy', 
                         status: 'In Progress', 
                         color: '#f1c40f',
-                        x: visibleArea.centerX,
-                        y: visibleArea.centerY
+                        x: centerX,
+                        y: centerY
                     }, 
                     { 
                         id: '3', 
                         name: 'Launch Campaign', 
                         status: 'Not Started', 
                         color: '#e74c3c',
-                        x: visibleArea.centerX + nodeSpacing,
-                        y: visibleArea.centerY
+                        x: centerX + nodeSpacing,
+                        y: centerY
                     }
                 ]; 
                 break; 
@@ -590,23 +601,23 @@
                         name: 'Start New Project', 
                         status: 'Not Started', 
                         color: '#3498db', 
-                        x: visibleArea.centerX, 
-                        y: visibleArea.centerY
+                        x: centerX, 
+                        y: centerY
                     }
                 ]; 
                 data.flowchartName = 'New Flowchart'; 
                 g('flowchartNameInput').value = data.flowchartName; 
         } 
         
-        // Set common properties for all template nodes
+        // Set common properties for all template nodes and pin them
         data.nodes.forEach(n => { 
             n.actionDescription = '[]'; 
             n.responsible = n.responsible || '';
             n.deadline = n.deadline || '';
             n.priority = n.priority || 'Normal';
-            // Don't pin template nodes initially - let simulation place them naturally
-            n.fx = null; 
-            n.fy = null; 
+            // Pin template nodes to their assigned positions
+            n.fx = n.x; 
+            n.fy = n.y; 
         }); 
         
         isInitialLayout = true; 
@@ -618,7 +629,6 @@
     function updateLegendDisplay() { const container = g('color-legend-display'); container.innerHTML = ''; const items = Object.entries(data.colorLegend); const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (items.length > 0) { items.forEach(([color, description]) => { const item = document.createElement('div'); item.className = 'legend-display-item'; const swatch = document.createElement('div'); swatch.className = 'legend-display-color'; swatch.style.backgroundColor = hexToRgba(color, opacity); const text = document.createElement('span'); text.textContent = description; item.appendChild(swatch); item.appendChild(text); container.appendChild(item); }); container.classList.add('visible'); } else { container.classList.remove('visible'); } }
     function createNode(pN) { 
         const nId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-        const visibleArea = getVisibleCanvasArea();
         const cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor;
         let iX, iY;
 
@@ -627,14 +637,16 @@
             iX = pN.x + (Math.random() * 100 - 50);
             iY = pN.y + cSD * 1.2; // Place below parent
         } else {
-            // Initial positioning in the visible area
-            iX = visibleArea.centerX + (Math.random() * 200 - 100);
-            iY = visibleArea.centerY + (Math.random() * 100 - 50);
+            // Get safe area after SVG is initialized
+            const safeArea = getSafePositioningArea();
+            iX = safeArea.centerX + (Math.random() * 200 - 100);
+            iY = safeArea.centerY + (Math.random() * 100 - 50);
         }
 
-        // Ensure the node stays within visible bounds
-        iX = Math.max(visibleArea.left + cSD / 2, Math.min(iX, visibleArea.right - cSD / 2));
-        iY = Math.max(visibleArea.top + cSD / 2, Math.min(iY, visibleArea.bottom - cSD / 2));
+        // Get safe bounds and ensure node stays within them
+        const safeArea = getSafePositioningArea();
+        iX = Math.max(safeArea.left + cSD / 2, Math.min(iX, safeArea.right - cSD / 2));
+        iY = Math.max(safeArea.top + cSD / 2, Math.min(iY, safeArea.bottom - cSD / 2));
 
         const nN = { 
             id: nId, 
