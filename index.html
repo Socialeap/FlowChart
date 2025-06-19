@@ -288,10 +288,9 @@
         }
 
         if (isInitialLayout) {
-            data.nodes.forEach(d => {
-                d.fx = d.x;
-                d.fy = d.y;
-            });
+            // FIX: If it's the first time loading, don't pin the nodes immediately.
+            // Let the simulation find a good initial position.
+            // Pinning happens on the first drag or after loading a file with positions.
             isInitialLayout = false;
         }
 
@@ -427,6 +426,11 @@
                     updateProjectDescButton();
                     g('fileNameDisplay').innerText = `Loaded: ${f.name}`;
                     isInitialLayout = true;
+                    // When loading a file, we want to respect the saved positions.
+                    data.nodes.forEach(d => {
+                      d.fx = d.x;
+                      d.fy = d.y;
+                    });
                     update();
                 } else {
                     alert('Invalid file format.');
