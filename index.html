@@ -99,6 +99,7 @@
     #deleteLinkModal .modal-content, #colorLegendModal .modal-content, #demoSaveModal .modal-content { max-width: 500px; text-align: center; }
     #shareModal .modal-content { max-width: 1200px; }
     #shareModal iframe { width: 100%; height: 85vh; border: none; }
+
     #color-legend-entries { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
     .legend-entry { display: flex; align-items: center; gap: 1rem; }
     .legend-color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--glass-border); flex-shrink: 0; }
@@ -355,12 +356,13 @@
                     );
                     if (!linkExists) {
                         data.links.push({ source: connectorStartNode.id, target: d.id });
-                        update();
+                        simulation.force('link').links(data.links);
                     }
                     connectorMode = false;
                     connectorStartNode = null;
                     g('addConnectorBtn').classList.remove('active');
                     g('flowchart').style.cursor = 'default';
+                    simulation.alpha(0.3).restart();
                 }
             } else {
                 nodeClick(event, d);
@@ -400,35 +402,12 @@
     function getIntersectionPoint(sourceNode, targetNode, width, height) {
         const sx = sourceNode.x, sy = sourceNode.y;
         const tx = targetNode.x, ty = targetNode.y;
-        
-        const dx = tx - sx;
-        const dy = ty - sy;
-
-        if (dx === 0 && dy === 0) {
-            return { x: sx, y: sy };
-        }
-
-        const angle = Math.atan2(dy, dx);
-        const halfWidth = width / 2;
-        const halfHeight = height / 2;
-
-        const cornerAngle = Math.atan2(halfHeight, halfWidth);
-
-        let ix, iy;
-        if (angle > -cornerAngle && angle <= cornerAngle) {
-            ix = sx + halfWidth;
-            iy = sy + halfWidth * Math.tan(angle);
-        } else if (angle > cornerAngle && angle <= Math.PI - cornerAngle) {
-            ix = sx + halfHeight / Math.tan(angle);
-            iy = sy + halfHeight;
-        } else if (angle > Math.PI - cornerAngle || angle <= -(Math.PI - cornerAngle)) {
-            ix = sx - halfWidth;
-            iy = sy - halfWidth * Math.tan(angle);
-        } else {
-            ix = sx - halfHeight / Math.tan(angle);
-            iy = sy - halfHeight;
-        }
-
+        const dx = tx - sx, dy = ty - sy;
+        if (dx === 0 && dy === 0) { return { x: sx, y: sy }; }
+        const halfWidth = width / 2, halfHeight = height / 2;
+        const slope = dy / dx, rectSlope = halfHeight / halfWidth; let ix, iy;
+        if (Math.abs(slope) < rectSlope) { if (dx > 0) { ix = sx + halfWidth; iy = sy + halfWidth * slope; } else { ix = sx - halfWidth; iy = sy - halfWidth * slope; } } 
+        else { if (dy > 0) { iy = sy + halfHeight; ix = sx + halfHeight / slope; } else { iy = sy - halfHeight; ix = sx + halfHeight / slope; } }
         return { x: ix, y: iy };
     }
 
@@ -443,6 +422,7 @@
     function updateProjectDescButton() { const hasDesc = data.projectDescription && data.projectDescription.summary.trim().length > 0; g('projectDescBtn').style.display = hasDesc ? 'inline-flex' : 'none'; }
     function nodeClick(ev, d) { ev.stopPropagation(); selectedNode = d; g('taskName').value = d.name || ''; g('responsible').value = d.responsible || ''; g('status').value = d.status || 'Not Started'; g('deadline').value = d.deadline || ''; g('priority').value = d.priority || 'Normal'; populateTaskTable(d.actionDescription || ''); g('nodeColor').value = d.color || ''; document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch')); if (d.color) { const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`); if (sS) sS.classList.add('selected-swatch'); } g('modal').style.display = 'block'; }
     
+    // Demo save function - shows popup instead of saving
     function demoSaveToFile() { 
         g('demoSaveModal').style.display = 'block'; 
     }
@@ -451,7 +431,7 @@
         alert('File upload is disabled in demo mode.'); 
     }
     
-    function loadTemplate(tmpl) { data.flowchartName = tmpl.charAt(0).toUpperCase() + tmpl.slice(1) + ' Template'; g('flowchartNameInput').value = data.flowchartName; data.links = []; data.projectDescription = { summary: '', generatedDate: '' }; data.colorLegend = {}; updateProjectDescButton(); switch (tmpl) { case 'prototype': data.nodes = [{ id: '1', name: 'Design System Setup', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'User Auth Development', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Real-time Collab Testing', status: 'Not Started', color: '#e74c3c' }]; break; case 'vendor': data.nodes = [{ id: '1', name: 'Identify Vendors', status: 'Completed', color: '#2ecc71' }, { id: '2', 'name': 'Conduct Outreach', 'status': 'In Progress', 'color': '#f1c40f' }, { id: '3', 'name': 'Select Final Vendor', 'status': 'Not Started', 'color': '#e74c3c' }]; break; case 'marketing': data.nodes = [{ id: '1', 'name': 'Market Research', 'status': 'Completed', 'color': '#2ecc71' }, { id: '2', 'name': 'Develop Strategy', 'status': 'In Progress', 'color': '#f1c40f' }, { id: '3', 'name': 'Launch Campaign', 'status': 'Not Started', 'color': '#e74c3c' }]; break; default: data.nodes = [{ id: 'root-1', 'name': 'Start New Project', 'status': 'Not Started', 'color': '#3498db', x: 300, y: 150, fx: 300, fy: 150 }]; data.flowchartName = 'New Flowchart'; g('flowchartNameInput').value = data.flowchartName; } data.nodes.forEach(n => { n.actionDescription = '[]'; n.fx = null; n.fy = null; }); isInitialLayout = true; update(); }
+    function loadTemplate(tmpl) { data.flowchartName = tmpl.charAt(0).toUpperCase() + tmpl.slice(1) + ' Template'; g('flowchartNameInput').value = data.flowchartName; data.links = []; data.projectDescription = { summary: '', generatedDate: '' }; data.colorLegend = {}; updateProjectDescButton(); switch (tmpl) { case 'prototype': data.nodes = [{ id: '1', name: 'Design System Setup', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'User Auth Development', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Real-time Collab Testing', status: 'Not Started', color: '#e74c3c' }]; break; case 'vendor': data.nodes = [{ id: '1', name: 'Identify Vendors', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Conduct Outreach', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Select Final Vendor', status: 'Not Started', color: '#e74c3c' }]; break; case 'marketing': data.nodes = [{ id: '1', name: 'Market Research', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Develop Strategy', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Launch Campaign', status: 'Not Started', color: '#e74c3c' }]; break; default: data.nodes = [{ id: 'root-1', name: 'Start New Project', status: 'Not Started', color: '#3498db', x: 300, y: 150, fx: 300, fy: 150 }]; data.flowchartName = 'New Flowchart'; g('flowchartNameInput').value = data.flowchartName; } data.nodes.forEach(n => { n.actionDescription = '[]'; n.fx = null; n.fy = null; }); isInitialLayout = true; update(); }
     function linkClickHandler(event, d) { event.stopPropagation(); selectedLink = d; linkGroup.selectAll('line.link').classed('selected', l => l === selectedLink); g('deleteLinkModal').style.display = 'block'; }
     function openColorLegendModal() { const container = g('color-legend-entries'); container.innerHTML = ''; const uniqueColors = [...new Set(data.nodes.map(n => n.color).filter(c => c))]; const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); uniqueColors.forEach(color => { const entry = document.createElement('div'); entry.className = 'legend-entry'; const swatch = document.createElement('div'); swatch.className = 'legend-color-swatch'; swatch.style.backgroundColor = hexToRgba(color, opacity); const input = document.createElement('input'); input.type = 'text'; input.placeholder = `Description for ${color}`; input.dataset.color = color; input.value = data.colorLegend[color] || ''; entry.appendChild(swatch); entry.appendChild(input); container.appendChild(entry); }); g('colorLegendModal').style.display = 'block'; }
     function saveColorLegend(event) { event.preventDefault(); document.querySelectorAll('#color-legend-entries input').forEach(input => { const color = input.dataset.color, desc = input.value.trim(); if (desc) data.colorLegend[color] = desc; else delete data.colorLegend[color]; }); g('colorLegendModal').style.display = 'none'; updateLegendDisplay(); }
