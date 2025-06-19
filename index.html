@@ -355,13 +355,12 @@
                     );
                     if (!linkExists) {
                         data.links.push({ source: connectorStartNode.id, target: d.id });
-                        simulation.force('link').links(data.links);
+                        update();
                     }
                     connectorMode = false;
                     connectorStartNode = null;
                     g('addConnectorBtn').classList.remove('active');
                     g('flowchart').style.cursor = 'default';
-                    simulation.alpha(0.3).restart();
                 }
             } else {
                 nodeClick(event, d);
