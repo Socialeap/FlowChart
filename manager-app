@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowChart Manager</title>
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+  />
+
+  <style>
+    :root {
+      --bg-primary: linear-gradient(135deg, #939ef5 0%, #9e76d6 100%);
+      --header-fixed-bg: #20232a;
+      --header-glass-border: rgba(255, 255, 255, 0.1);
+      --text-on-header: white;
+      --button-bg: rgba(255, 255, 255, 0.25);
+      --button-text: var(--text-on-header);
+      --button-hover-bg: rgba(255, 255, 255, 0.4);
+      --backdrop-blur: 10px;
+      --input-bg: rgba(255, 255, 255, 0.2);
+      --input-border: rgba(200, 200, 220, 0.4);
+      --input-text: #1c1c1e;
+      --glass-border: rgba(200, 200, 220, 0.4);
+      --modal-bg: rgba(255, 255, 255, 0.3);
+      --modal-text: #1c1c1e;
+      --close-button-color: rgba(0, 0, 0, 0.5);
+      --close-button-hover-color: #000;
+      --flowchart-container-bg: rgba(255, 255, 255, 0.15);
+      --flowchart-container-border: rgba(200, 200, 220, 0.3);
+      --node-text-fill: var(--text-on-glass-light-bg, #1c1c1e);
+      --node-fill-opacity: 0.45;
+      --task-count-rect-bg: rgba(44, 62, 80, 0.75);
+      --task-count-text-fill: white;
+      --task-count-border: rgba(255, 255, 255, 0.2);
+      --modal-strong-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+      --link-color: #555;
+      --link-selected-color: #e74c3c;
+    }
+
+    body.dark-mode {
+      --bg-primary: linear-gradient(135deg, #101020 0%, #0c1428 50%, #08203f 100%);
+      --text-on-header: #e0e0e0;
+      --button-bg: rgba(255, 255, 255, 0.12);
+      --button-text: #e0e0e0;
+      --button-hover-bg: rgba(255, 255, 255, 0.22);
+      --input-bg: rgba(255, 255, 255, 0.1);
+      --input-border: rgba(255, 255, 255, 0.2);
+      --input-text: #e0e0e0;
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --modal-bg: rgba(25, 30, 45, 0.5);
+      --modal-text: #e0e0e0;
+      --flowchart-container-bg: rgba(10, 10, 20, 0.1);
+      --flowchart-container-border: rgba(255, 255, 255, 0.1);
+      --modal-strong-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+      --link-color: #aaa;
+      --link-selected-color: #ff5252;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: #333; display: flex; flex-direction: column; min-height: 100vh; transition: background 0.5s ease; position: relative; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary); z-index: -1; transition: background 0.5s ease; }
+    header { background: var(--header-fixed-bg); backdrop-filter: blur(var(--backdrop-blur)); -webkit-backdrop-filter: blur(var(--backdrop-blur)); border-bottom: 1px solid var(--header-glass-border); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); color: var(--text-on-header); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; position: sticky; top: 0; z-index: 999; }
+    header h1 { display: flex; align-items: center; margin: 0; font-size: 1.75rem; font-weight: 600; color: var(--text-on-header); }
+    #headerLogo { width: 32px; height: 32px; margin-right: 0.75rem; }
+    header h1 input#flowchartNameInput { margin-left: 1rem; font-size: 0.9rem; padding: 0.5rem 1rem; border: 1px solid var(--input-border); border-radius: 8px; background: var(--input-bg); color: var(--input-text); transition: all 0.3s ease; font-weight: 400; }
+    header h1 input#flowchartNameInput:focus { outline: none; border-color: var(--glass-border); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1); }
+    nav { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    nav button, #themeToggleBtn { background: var(--button-bg); backdrop-filter: blur(var(--backdrop-blur)); -webkit-backdrop-filter: blur(var(--backdrop-blur)); border: 1px solid var(--header-glass-border); color: var(--button-text); padding: 0.5rem; width: 2.5rem; height: 2.5rem; border-radius: 8px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+    nav button:hover, #themeToggleBtn:hover { background: var(--button-hover-bg); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); }
+    nav button:active, #themeToggleBtn:active, nav button.active { transform: translateY(0); background: var(--button-hover-bg); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); }
+    #fileNameDisplay { margin-left: 1rem; font-size: 0.9rem; color: var(--text-on-header); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    #tooltip { position: fixed; background-color: var(--header-fixed-bg); color: var(--text-on-header); padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; z-index: 10001; pointer-events: none; visibility: hidden; opacity: 0; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.25); border: 1px solid var(--header-glass-border); transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; transform: translateX(-50%) translateY(10px); }
+    #tooltip.visible { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+    #color-legend-display { position: sticky; top: 80px; width: calc(100% - 2rem); margin: 0 auto 1rem auto; padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--header-glass-border); border-radius: 12px; z-index: 998; display: none; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+    #color-legend-display.visible { display: flex; }
+    .legend-display-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-on-header); }
+    .legend-display-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); }
+    #flowchartContainer { width: calc(100% - 2rem); flex-grow: 1; border: 1px solid var(--flowchart-container-border); background: var(--flowchart-container-bg); overflow: hidden; position: relative; margin: 1rem; border-radius: 20px; box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1); }
+    #flowchart { display: block; width: 100%; height: 100%; }
+    line.link { cursor: pointer; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
+    line.link.selected { stroke: var(--link-selected-color) !important; stroke-width: 4px; stroke-dasharray: 5, 5; }
+    #banner-container { position: absolute; top: 10px; left: 10px; width: 35%; max-width: 420px; aspect-ratio: 1500 / 625; border-radius: 12px; overflow: hidden; background: transparent; z-index: 50; pointer-events: none; }
+    #banner-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding-top: 50px; overflow-y: auto; }
+    .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); color: var(--modal-text); margin: 20px auto; padding: 2rem; width: 90%; max-width: 750px; overflow-y: auto; max-height: calc(100vh - 100px); border-radius: 20px; position: relative; box-shadow: var(--modal-strong-shadow); transition: background 0.3s ease, border-color 0.3s ease; }
+    #deleteLinkModal .modal-content, #colorLegendModal .modal-content { max-width: 500px; }
+    #color-legend-entries { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+    .legend-entry { display: flex; align-items: center; gap: 1rem; }
+    .legend-color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--glass-border); flex-shrink: 0; }
+    .legend-entry input { flex-grow: 1; }
+    .close-button { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: var(--close-button-color); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, 0.1); transition: all 0.3s ease; z-index: 10; }
+    .close-button:hover { color: var(--close-button-hover-color); background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+    form { display: flex; flex-direction: column; gap: 1rem; }
+    input, select, textarea { padding: 12px 16px; border: 1px solid var(--input-border); border-radius: 12px; font-size: 1em; background: var(--input-bg); color: var(--input-text); font-family: 'Inter', 'Segoe UI', sans-serif; transition: all 0.3s ease; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--glass-border); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
+    textarea { resize: vertical; min-height: 80px; }
+    #taskName { width: 100%; }
+    .modal-btn { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--modal-text); padding: 10px 20px; border-radius: 10px; font-size: 1em; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+    .modal-btn:hover { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); }
+    .modal-btn:active { transform: translateY(0); box-shadow: none; }
+    .modal-btn.danger { background-color: rgba(231, 76, 60, 0.5); }
+    .modal-btn.danger:hover { background-color: rgba(231, 76, 60, 0.7); }
+    .flowchart-node-html-wrapper { overflow: visible; }
+    .flowchart-node-html { background-color: transparent; border: 1px solid var(--glass-border); box-shadow: var(--modal-strong-shadow); border-radius: 18px; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 8px; box-sizing: border-box; color: var(--node-text-fill); text-align: center; cursor: move; overflow: hidden; transition: background-color 0.3s ease, border-color 0.3s ease; }
+    .flowchart-node-html.dragging { transition: none !important; }
+    .node-name-html { font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); word-break: break-word; flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+    .task-count-pill-html { background: var(--task-count-rect-bg); color: var(--task-count-text-fill); padding: 4px 10px; border-radius: 14px; font-weight: 600; font-size: 0.9em; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); border: 1px solid var(--task-count-border); white-space: nowrap; margin-bottom: auto; }
+    .priority-indicator { font-size: 0.8em; line-height: 1; margin-top: auto; align-self: flex-end; padding: 4px; }
+    #userGuideModal .modal-content ul {list-style: none; padding: 0;}
+    #userGuideModal .modal-content a { color: var(--modal-text); text-decoration: underline; }
+    .modal-content h2, #userGuideModal .modal-content h2 { font-size: 1.5em; margin-bottom: 1em; }
+    .modal-content h3, #userGuideModal .modal-content h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-size: 1.15em; color: var(--modal-text); }
+    .modal-content li, #userGuideModal .modal-content li { margin-bottom: 0.7em; line-height: 1.6; }
+    #userGuideModal .modal-content li strong { font-weight: 600; color: var(--modal-text); }
+    .modal-content p, #userGuideModal .modal-content p { margin-bottom: 1em; line-height: 1.6; }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
+    <nav>
+      <button id="nodeSizeIncreaseBtn" data-tooltip-text="Increase Node Size"><i class="fas fa-plus"></i></button>
+      <button id="nodeSizeDecreaseBtn" data-tooltip-text="Decrease Node Size"><i class="fas fa-minus"></i></button>
+      <button id="aiAssistantBtn" data-tooltip-text="AI Assistant (turn off 'Full Screen')"><i class="fas fa-lightbulb"></i></button>
+      <button id="userGuideBtn" data-tooltip-text="User Guide"><i class="fas fa-book-open"></i></button>
+      <button id="colorLegendBtn" data-tooltip-text="Color Legend"><i class="fas fa-palette"></i></button>
+      <button id="templateBtn" data-tooltip-text="Load a Template"><i class="fas fa-file-alt"></i></button>
+      <button id="projectDescBtn" style="display: none;" data-tooltip-text="Project Description"><i class="fas fa-info-circle"></i></button>
+      <button id="addConnectorBtn" data-tooltip-text="Add Connector"><i class="fas fa-link"></i></button>
+      <button id="saveBtn" data-tooltip-text="Save Flowchart"><i class="fas fa-floppy-disk"></i></button>
+      <button id="shareBtn" data-tooltip-text="Share"><i class="fas fa-share-alt"></i></button>
+      <input type="file" id="fileInput" accept=".json" style="display: none;" />
+      <button id="uploadBtn" data-tooltip-text="Upload Flowchart"><i class="fas fa-upload"></i></button>
+      <div id="fileNameDisplay">No file loaded</div>
+      <button id="themeToggleBtn" data-tooltip-text="Toggle Theme"><i class="fas fa-moon"></i></button>
+    </nav>
+  </header>
+  
+  <div id="color-legend-display"></div>
+
+  <div id="flowchartContainer">
+    <div id="banner-container"><iframe src="https://transcendence.media/SmartWealth-Banner" allowtransparency="true" scrolling="no" frameborder="0"></iframe></div>
+    <svg id="flowchart"></svg>
+  </div>
+
+  <div id="modal" class="modal"><div class="modal-content"><span class="close-button" id="closeModal">×</span><h2>Task Details</h2><form id="taskForm"><label>Task Name: <textarea id="taskName" required></textarea></label><label>Responsible: <input type="text" id="responsible" /></label><label>Status:<select id="status"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></label><label>Deadline: <input type="date" id="deadline" /></label><label>Priority:<select id="priority"><option value="Low">Low</option><option value="Normal">Normal</option><option value="High">High</option></select></label><label>Action Description (Sub-tasks):</label><table id="taskTable"><thead><tr><th style="width: 30px;">✓</th><th>Task</th></tr></thead><tbody></tbody></table><button type="button" id="addTaskRowBtn" class="modal-btn">Add Task</button><label>Node Color:</label><input type="hidden" id="nodeColor" /><div class="color-panel"><div class="color-swatch" data-color="#e74c3c"></div><div class="color-swatch" data-color="#f1c40f"></div><div class="color-swatch" data-color="#2ecc71"></div><div class="color-swatch" data-color="#3498db"></div><div class="color-swatch" data-color="#9b59b6"></div><div class="color-swatch" data-color="#34495e"></div></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Node</button><button type="button" class="modal-btn" id="addNodeBtn">Add Child Node</button></div><div style="text-align: center; margin-top: 20px;"><button type="button" id="deleteNodeBtn" class="modal-btn danger">Delete Node</button></div></form></div></div>
+  <div id="templateModal" class="modal"><div class="modal-content"><span class="close-button" id="closeTemplateModal">×</span><h2>Select Template</h2><div style="display: flex; flex-direction: column; gap: 1rem;"><button class="modal-btn" data-template="prototype">Prototype Development</button><button class="modal-btn" data-template="vendor">Vendor Outreach</button><button class="modal-btn" data-template="marketing">Marketing Campaign</button></div></div></div>
+  <div id="taskTextPopup" class="modal"><div class="modal-content"><span class="close-button" id="closeTaskPopup">×</span><p id="taskFullText" style="white-space: pre-wrap; max-height: 60vh; overflow-y: auto;"></p><button id="deleteTaskBtn" class="modal-btn danger">Delete Task</button></div></div>
+  <div id="userGuideModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeUserGuideModal">×</span>
+      <h2>📘 FlowChart Manager – User Guide</h2>
+      <p>For a full guide and demo, try our <a href="https://www.socialeap.net/flowchart-manager-demo" target="_blank">Interactive Tutorial</a>.</p>
+      <h3>🛠️ Interface Controls</h3>
+      <ul>
+        <li><b>↥ Upload</b> – Import a FlowChart (json) file to continue work or load a new chart.</li>
+        <li><b>💾 Save</b> – Saving a FlowChart will always create a new file version each time.</li>
+        <li><b>📄 Templates</b> – Start with a ready-made template 📄 (Prototype, Vendor, or Marketing).</li>
+        <li><b>🎨 Color Legend</b> – Define what each color represents in your flowchart. The legend will appear below the header.</li>
+        <li><b>+/- Node Size </b> – Resize task nodes for better visibility.</li>
+        <li><b>🔗 Add Connector</b> - Click to enter 'Connector Mode,' then click two nodes to link them.</li>
+        <li><b>⛓️‍💥 Delete a Connector</b> - Click directly on a connector line to bring up a confirmation to delete it.</li>
+        <li>ℹ︎ Use your mouse to drag entire Canvas.</li>
+        <li>Use mouse wheel to further enlarge/shrink nodes.</li>
+        <li><b>Share</b> – Tell your friends/colleagues about FlowChart!.</li>
+      </ul>
+      <h3>🧩 Working with Tasks</h3>
+      <ul>
+        <li>Click any node to view or edit its details.</li>
+        <li>To delete a specific sub-task, simply double-click on its text field within the node details popup.</li>
+        <li>Completing fields like Responsible, Deadline, and Priority helps align your workflow, track progress, and maintain clarity.</li>
+      </ul>
+       <h3><i class="fas fa-lightbulb"></i> GPT FlowChart Assistant</h3>
+        <ul>
+            <li>When initiating the💡AI Assistant, ensure that you deactivate 'Full Screen' mode of your browser so that the Assistant will overlap.</li>
+            <li>Click the 💡 button to open our FlowChart AI Assistant. </li>
+            <li>Ask the AI assistant to:
+                <ul style="margin-top: 0.5em;">
+                    <li>Analyze and suggest improvements</li>
+                    <li>Provide insights, summaries, reports</li>
+                    <li>Update/Add/Delete node titles, deadlines, tasks, etc.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+  </div>
+  <div id="shareModal" class="modal"><div class="modal-content"><span class="close-button" id="closeShareModal">×</span><h2>Share Flowchart</h2><iframe src="https://view.genially.com/6845a98ee4504c754b83f421" allowfullscreen="true" scrolling="no" frameborder="0"></iframe></div></div>
+  <div id="projectDescModal" class="modal"><div class="modal-content"><span class="close-button" id="closeProjectDescModal">×</span><h2>Project Description</h2><p id="projectSummary"></p><p id="projectGeneratedDate"></p></div></div>
+  <div id="deleteLinkModal" class="modal"><div class="modal-content"><span class="close-button" id="cancelDeleteLinkBtn">×</span><h2>Delete Connector</h2><p>Are you sure you want to delete this connection?</p><div class="action-buttons"><button id="confirmDeleteLinkBtn" class="modal-btn danger">Delete</button></div></div></div>
+  <div id="colorLegendModal" class="modal"><div class="modal-content"><span class="close-button" id="closeColorLegendModal">×</span><h2>Edit Color Legend</h2><form id="colorLegendForm"><p>Define what each color represents. These will be shown in a legend below the header.</p><div id="color-legend-entries"></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Legend</button></div></form></div></div>
+  <div id="tooltip"></div>
+
+  <script>
+    let selectedNode = null, selectedLink = null,
+      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {} },
+      simulation, svg, nodeGroup, linkGroup, mainZoomGroup,
+      isInitialLayout = true; // Flag to track the first layout
+    const BASE_NODE_DIMENSION = 160;
+    let currentNodeSizeFactor = 1.0;
+    const MIN_NODE_SIZE_FACTOR = 0.5, MAX_NODE_SIZE_FACTOR = 1.5, NODE_SIZE_STEP = 0.1;
+    let connectorMode = false, connectorStartNode = null;
+    const g = (id) => document.getElementById(id);
+
+    function hexToRgba(hex, alpha = 1) {
+      if (!hex || typeof hex !== 'string') return `rgba(200,200,200,${alpha})`;
+      hex = hex.replace('#', ''); let r = 0, g = 0, b = 0;
+      if (hex.length === 3) { r = parseInt(hex[0] + hex[0], 16); g = parseInt(hex[1] + hex[1], 16); b = parseInt(hex[2] + hex[2], 16); } 
+      else if (hex.length === 6) { r = parseInt(hex.substring(0, 2), 16); g = parseInt(hex.substring(2, 4), 16); b = parseInt(hex.substring(4, 6), 16); } 
+      else { return `rgba(128, 128, 128, ${alpha})`; }
+      if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(128,128,128,${alpha})`;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function initD3() {
+        const fcCont = g('flowchartContainer');
+        const cW = fcCont.clientWidth, cH = fcCont.clientHeight;
+        const vW = Math.max(cW * 1.5, 2000), vH = Math.max(cH * 1.5, 1500);
+        svg = d3.select('#flowchart').attr('viewBox', `0 0 ${vW} ${vH}`);
+        mainZoomGroup = svg.append('g').attr('class', 'zoom-group');
+        linkGroup = mainZoomGroup.append('g').attr('class', 'links');
+        nodeGroup = mainZoomGroup.append('g').attr('class', 'nodes');
+        const zoom = d3.zoom().filter(event => !event.target.closest('.node-group')).on('zoom', (event) => { mainZoomGroup.attr('transform', event.transform); });
+        svg.call(zoom).on("dblclick.zoom", null);
+        simulation = d3.forceSimulation()
+            .force('charge', d3.forceManyBody().strength(-1800 * (BASE_NODE_DIMENSION / 160)))
+            .force('collide', d3.forceCollide().radius((BASE_NODE_DIMENSION * 0.55) + 25).strength(0.9))
+            .force('center', d3.forceCenter(vW / 2, vH / 2));
+    }
+
+    // START: REVISED D3 DRAG BEHAVIOR
+    const drag = d3.drag()
+        .on('start', function(event, d) {
+            // Prevent drag from interfering with connector mode clicks
+            if (connectorMode) return;
+
+            // Re-enable the simulation's force on the active node during drag
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            
+            // Store the original position
+            d.fx = d.x;
+            d.fy = d.y;
+
+            d3.select(this).select('.flowchart-node-html').classed('dragging', true);
+        })
+        .on('drag', function(event, d) {
+            if (connectorMode) return;
+            
+            // D3's event.x and event.y are already correctly transformed.
+            d.fx = event.x;
+            d.fy = event.y;
+        })
+        .on('end', function(event, d) {
+            if (connectorMode) return;
+
+            // Let the simulation cool down
+            if (!event.active) simulation.alphaTarget(0);
+
+            // Keep the node fixed where the user drops it.
+            // If we wanted the simulation to affect it again, we would set d.fx = null;
+
+            d3.select(this).select('.flowchart-node-html').classed('dragging', false);
+        });
+    // END: REVISED D3 DRAG BEHAVIOR
+    
+    const tick = () => {
+        const currentScaledDimension = BASE_NODE_DIMENSION * currentNodeSizeFactor;
+        // The simulation now handles the transform updates, so this manual call is less critical
+        // but can remain for immediate feedback if needed.
+        nodeGroup.selectAll('g.node-group').attr('transform', d => `translate(${d.fx || d.x || 0},${d.fy || d.y || 0})`);
+        linkGroup.selectAll('line.link').each(function(d) {
+            if (d.source && d.target) {
+                const sourcePoint = getIntersectionPoint(d.source, d.target, currentScaledDimension, currentScaledDimension);
+                const targetPoint = getIntersectionPoint(d.target, d.source, currentScaledDimension, currentScaledDimension);
+                d3.select(this).attr('x1', sourcePoint.x).attr('y1', sourcePoint.y).attr('x2', targetPoint.x).attr('y2', targetPoint.y);
+            }
+        });
+    }
+
+    function update() {
+        if (!svg || !simulation) return;
+        updateLegendDisplay();
+        const currentScaledDimension = BASE_NODE_DIMENSION * currentNodeSizeFactor;
+        
+        simulation.nodes(data.nodes);
+        if(data.links.length > 0) { 
+            simulation.force('link', d3.forceLink(data.links).id(d => d.id).distance(250).strength(0.05));
+        } else {
+            simulation.force('link', null);
+        }
+
+        if (isInitialLayout) {
+            simulation.stop();
+            for (let i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
+                simulation.tick();
+            }
+            // Pin all nodes after the initial layout
+            data.nodes.forEach(d => {
+                d.fx = d.x;
+                d.fy = d.y;
+            });
+            isInitialLayout = false; // Set flag to false after first run
+        }
+
+        let link = linkGroup.selectAll('line.link').data(data.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
+        link.exit().remove();
+        link = link.enter().append('line').attr('class', 'link').attr('stroke', 'var(--link-color)').attr('stroke-width', 2.5).on('click', linkClickHandler).merge(link);
+
+        let node = nodeGroup.selectAll('g.node-group').data(data.nodes, d => d.id);
+        node.exit().remove();
+        
+        const nodeEnter = node.enter().append('g').attr('class', 'node-group').call(drag);
+        
+        nodeEnter.append('foreignObject')
+            .attr('class', 'flowchart-node-html-wrapper')
+            .append('xhtml:div').attr('class', 'flowchart-node-html');
+        
+        node = nodeEnter.merge(node);
+        
+        // START: REVISED NODE CLICK HANDLER
+        node.on('click', (event, d) => {
+            // This is a d3 event property. If true, it means a drag gesture just happened.
+            if (event.defaultPrevented) return; 
+
+            event.stopPropagation();
+
+            if (connectorMode) {
+                if (!connectorStartNode) {
+                    connectorStartNode = d;
+                    // Add visual feedback for the user
+                    d3.select(event.currentTarget).select('.flowchart-node-html').style('outline', '3px solid var(--link-selected-color)');
+                } else if (d.id !== connectorStartNode.id) {
+                    // Remove visual feedback from start node
+                    nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
+
+                    const linkExists = data.links.some(l => 
+                        ((l.source.id || l.source) === connectorStartNode.id && (l.target.id || l.target) === d.id) ||
+                        ((l.source.id || l.source) === d.id && (l.target.id || l.target) === connectorStartNode.id)
+                    );
+                    if (!linkExists) {
+                        data.links.push({ source: connectorStartNode.id, target: d.id });
+                        isInitialLayout = false; 
+                        update();
+                    }
+                    // Reset connector mode
+                    connectorMode = false;
+                    connectorStartNode = null;
+                    g('addConnectorBtn').classList.remove('active');
+                    g('flowchart').style.cursor = 'default';
+                }
+            } else {
+                // This is a regular node click to open the modal
+                nodeClick(event, d);
+            }
+        });
+        // END: REVISED NODE CLICK HANDLER
+
+        node.select('foreignObject')
+            .attr('width', currentScaledDimension).attr('height', currentScaledDimension)
+            .attr('x', -currentScaledDimension / 2).attr('y', -currentScaledDimension / 2);
+
+        node.select('.flowchart-node-html').each(function(d) {
+            const nodeOuterDiv = d3.select(this);
+            const nodeFillOpacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.7');
+            const baseColorHex = d.color ? d.color : getStatusColor(d.status);
+            nodeOuterDiv.style('background-color', hexToRgba(baseColorHex, nodeFillOpacity));
+            
+            let pillDiv = nodeOuterDiv.select('.task-count-pill-html');
+            if (pillDiv.empty()) pillDiv = nodeOuterDiv.append('div').attr('class', 'task-count-pill-html');
+            let nameDiv = nodeOuterDiv.select('.node-name-html');
+            if (nameDiv.empty()) nameDiv = nodeOuterDiv.append('div').attr('class', 'node-name-html');
+            let prDiv = nodeOuterDiv.select('.priority-indicator');
+            if (prDiv.empty()) prDiv = nodeOuterDiv.append('div').attr('class', 'priority-indicator');
+            
+            nameDiv.text(d.name || '');
+            let indicatorHtml = d.priority === 'Low' ? '🔴 ⚪️ ⚪️' : d.priority === 'Normal' ? '🔴 🔴 ⚪️' : d.priority === 'High' ? '🔴 🔴 🔴' : '⚪️ ⚪️ ⚪️';
+            prDiv.html(indicatorHtml);
+            let tasks = []; try { if (d.actionDescription) tasks = JSON.parse(d.actionDescription); } catch (e) {}
+            const compC = tasks.filter((t) => t.completed).length, totC = tasks.length;
+            if (totC > 0) { pillDiv.text(`✓ ${compC}/${totC}`).style('display', 'block'); } 
+            else { pillDiv.style('display', 'none'); }
+        });
+
+        simulation.on('tick', tick);
+        tick(); 
+    }
+
+    function getIntersectionPoint(sourceNode, targetNode, width, height) {
+        const sx = sourceNode.fx || sourceNode.x, sy = sourceNode.fy || sourceNode.y;
+        const tx = targetNode.fx || targetNode.x, ty = targetNode.fy || targetNode.y;
+        const dx = tx - sx, dy = ty - sy;
+        if (dx === 0 && dy === 0) { return { x: sx, y: sy }; }
+        const halfWidth = width / 2, halfHeight = height / 2;
+        const slope = dy / dx, rectSlope = halfHeight / halfWidth; let ix, iy;
+        if (Math.abs(slope) < rectSlope) { if (dx > 0) { ix = sx + halfWidth; iy = sy + halfWidth * slope; } else { ix = sx - halfWidth; iy = sy - halfWidth * slope; } } 
+        else { if (dy > 0) { iy = sy + halfHeight; ix = sx + halfHeight / slope; } else { iy = sy - halfHeight; ix = sx + halfHeight / slope; } }
+        return { x: ix, y: iy };
+    }
+
+    function getStatusColor(s) {
+      switch (s) { case 'Not Started': return '#e74c3c'; case 'In Progress': return '#f1c40f'; case 'Completed': return '#2ecc71'; default: return '#3498db'; }
+    }
+    
+    function openAIAssistant() { const url = 'https://chatgpt.com/g/g-678c450b02988191b07d47c7a5bd9d4a-flow-chart-assistant'; const sW = window.screen.availWidth, sH = window.screen.availHeight, bS = Math.min(sW, sH); const pW = Math.floor(bS * 0.45), pH = Math.floor(bS * 0.55), l = Math.floor((sW - pW) / 2), t = Math.floor((sH - pH) / 2); window.open(url, 'FlowchartAIAssistant', `width=${pW},height=${pH},left=${l},top=${t},resizable=yes,scrollbars=yes`); }
+    function placeNodesDiagonally() { const vW = parseFloat(svg.attr('viewBox').split(' ')[2]); const iX = vW / 2, iY = 150, cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor; const hS = cSD * 1.75, vS = cSD * 1.25; data.nodes.forEach((n, i) => { if (n.x == null) { n.x = iX + (i % 3 - 1) * hS + (Math.random() * 50 - 25); } if (n.y == null) { n.y = iY + Math.floor(i / 3) * vS + (Math.random() * 50 - 25); } }); }
+    function addTaskRow(t) { const tb = g('taskTable').querySelector('tbody'), tr = document.createElement('tr'); tr.addEventListener('click', function () { document.querySelectorAll('#taskTable tbody tr').forEach((r) => r.classList.remove('selectedTaskRow')); this.classList.add('selectedTaskRow'); }); const tdC = document.createElement('td'), cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t && t.completed; tdC.appendChild(cb); const tdT = document.createElement('td'), ti = document.createElement('textarea'); ti.classList.add('task-detail-textarea'); ti.value = t && t.task ? t.task : ''; ti.rows = 1; ti.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; }); ti.addEventListener('dblclick', (e) => { e.stopPropagation(); tr.classList.add('selectedTaskRow'); showTaskPopup(ti.value); }); tdT.appendChild(ti); tr.appendChild(tdC); tr.appendChild(tdT); tb.appendChild(tr); ti.dispatchEvent(new Event('input')); }
+    function populateTaskTable(str) { const tb = g('taskTable').querySelector('tbody'); tb.innerHTML = ''; let arr = []; try { arr = JSON.parse(str); if (!Array.isArray(arr)) arr = str.trim() ? [{ completed: false, task: str }] : []; } catch (e) { arr = str.trim() ? [{ completed: false, task: str }] : []; } if (Array.isArray(str)) arr = str; if (arr.length > 0) arr.forEach((t) => addTaskRow(t)); else addTaskRow({}); }
+    function showTaskPopup(txt) { g('taskFullText').textContent = txt; g('taskTextPopup').style.display = 'block'; }
+    function updateProjectDescButton() { const hasDesc = data.projectDescription && data.projectDescription.summary.trim().length > 0; g('projectDescBtn').style.display = hasDesc ? 'inline-flex' : 'none'; }
+    function nodeClick(ev, d) { ev.stopPropagation(); selectedNode = d; g('taskName').value = d.name || ''; g('responsible').value = d.responsible || ''; g('status').value = d.status || 'Not Started'; g('deadline').value = d.deadline || ''; g('priority').value = d.priority || 'Normal'; populateTaskTable(d.actionDescription || ''); g('nodeColor').value = d.color || ''; document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch')); if (d.color) { const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`); if (sS) sS.classList.add('selected-swatch'); } g('modal').style.display = 'block'; }
+    function saveToFile() { try { data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; const expD = { flowchartName: data.flowchartName, projectDescription: data.projectDescription, nodes: data.nodes.map(n => ({ id: n.id, name: n.name, status: n.status, responsible: n.responsible, deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy })), links: data.links.map(l => ({ source: l.source.id || l.source, target: l.target.id || l.target })), colorLegend: data.colorLegend }; const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } }
+    function normalizeNodePositions(nodes) { if (!nodes || nodes.length === 0) return; const vB = svg.attr('viewBox').split(' ').map(parseFloat); const canvasWidth = vB[2]; const paddingTop = 200; let minX = Infinity, maxX = -Infinity, minY = Infinity; nodes.forEach(n => { if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x; if (n.y < minY) minY = n.y; }); const layoutWidth = maxX - minX; const offsetX = (canvasWidth / 2) - (minX + layoutWidth / 2); const offsetY = paddingTop - minY; nodes.forEach(n => { n.x += offsetX; if (n.fx != null) n.fx += offsetX; n.y += offsetY; if (n.fy != null) n.fy += offsetY; }); }
+    function loadFromFile(f) { if (!f) { alert('No file.'); return; } const r = new FileReader(); r.onload = (e) => { try { const fD = JSON.parse(e.target.result); if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) { data.flowchartName = fD.flowchartName || 'Untitled'; g('flowchartNameInput').value = data.flowchartName; data.projectDescription = fD.projectDescription || { summary: '', generatedDate: '' }; updateProjectDescButton(); data.colorLegend = fD.colorLegend || {}; data.nodes = fD.nodes.map(n => ({ ...n, x: n.x, y: n.y, fx: n.fx !== undefined ? n.fx : n.x, fy: n.fy !== undefined ? n.fy : n.y })); data.links = Array.isArray(fD.links) ? fD.links : []; g('fileNameDisplay').innerText = `Loaded: ${f.name}`; normalizeNodePositions(data.nodes); isInitialLayout = true; update(); } else alert('Invalid format.'); } catch (err) { alert('Parse error.'); console.error('Load file error:', err); } }; r.onerror = () => alert('Read error.'); r.readAsText(f); }
+    function loadTemplate(tmpl) { data.flowchartName = tmpl.charAt(0).toUpperCase() + tmpl.slice(1) + ' Template'; g('flowchartNameInput').value = data.flowchartName; data.links = []; data.projectDescription = { summary: '', generatedDate: '' }; data.colorLegend = {}; updateProjectDescButton(); switch (tmpl) { case 'prototype': data.nodes = [{ id: '1', name: 'Design System Setup', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'User Auth Development', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Real-time Collab Testing', status: 'Not Started', color: '#e74c3c' }]; break; case 'vendor': data.nodes = [{ id: '1', name: 'Identify Vendors', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Conduct Outreach', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Select Final Vendor', status: 'Not Started', color: '#e74c3c' }]; break; case 'marketing': data.nodes = [{ id: '1', name: 'Market Research', status: 'Completed', color: '#2ecc71' }, { id: '2', name: 'Develop Strategy', status: 'In Progress', color: '#f1c40f' }, { id: '3', name: 'Launch Campaign', status: 'Not Started', color: '#e74c3c' }]; break; default: data.nodes = [{ id: 'root-1', name: 'Start New Project', status: 'Not Started', color: '#3498db', x: 300, y: 150, fx: 300, fy: 150 }]; data.flowchartName = 'New Flowchart'; g('flowchartNameInput').value = data.flowchartName; } data.nodes.forEach(n => { n.actionDescription = '[]'; n.fx = null; n.fy = null; }); placeNodesDiagonally(); isInitialLayout = true; update(); }
+    function linkClickHandler(event, d) { event.stopPropagation(); selectedLink = d; linkGroup.selectAll('line.link').classed('selected', l => l === selectedLink); g('deleteLinkModal').style.display = 'block'; }
+    function openColorLegendModal() { const container = g('color-legend-entries'); container.innerHTML = ''; const uniqueColors = [...new Set(data.nodes.map(n => n.color).filter(c => c))]; const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); uniqueColors.forEach(color => { const entry = document.createElement('div'); entry.className = 'legend-entry'; const swatch = document.createElement('div'); swatch.className = 'legend-color-swatch'; swatch.style.backgroundColor = hexToRgba(color, opacity); const input = document.createElement('input'); input.type = 'text'; input.placeholder = `Description for ${color}`; input.dataset.color = color; input.value = data.colorLegend[color] || ''; entry.appendChild(swatch); entry.appendChild(input); container.appendChild(entry); }); g('colorLegendModal').style.display = 'block'; }
+    function saveColorLegend(event) { event.preventDefault(); document.querySelectorAll('#color-legend-entries input').forEach(input => { const color = input.dataset.color, desc = input.value.trim(); if (desc) data.colorLegend[color] = desc; else delete data.colorLegend[color]; }); g('colorLegendModal').style.display = 'none'; updateLegendDisplay(); }
+    function updateLegendDisplay() { const container = g('color-legend-display'); container.innerHTML = ''; const items = Object.entries(data.colorLegend); const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (items.length > 0) { items.forEach(([color, description]) => { const item = document.createElement('div'); item.className = 'legend-display-item'; const swatch = document.createElement('div'); swatch.className = 'legend-display-color'; swatch.style.backgroundColor = hexToRgba(color, opacity); const text = document.createElement('span'); text.textContent = description; item.appendChild(swatch); item.appendChild(text); container.appendChild(item); }); container.classList.add('visible'); } else { container.classList.remove('visible'); } }
+    function createNode(pN) { const nId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`; let iX, iY; const vB = svg.attr('viewBox').split(' '), vW = parseFloat(vB[2]), vH = parseFloat(vB[3]), cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor; if (pN && typeof pN.x === 'number') { iX = pN.x + (Math.random() * 100 - 50); iY = pN.y + cSD * 0.9; } else { iX = vW / 2 + (Math.random() * 200 - 100); iY = vH / 3 + (Math.random() * 100 - 50); } iX = Math.max(cSD / 2, Math.min(iX, vW - cSD / 2)); iY = Math.max(cSD / 2, Math.min(iY, vH - cSD / 2)); const nN = { id: nId, name: 'New Task Node', status: 'Not Started', responsible: '', deadline: '', priority: 'Normal', actionDescription: '[]', color: null, x: iX, y: iY, fx: iX, fy: iY }; data.nodes.push(nN); isInitialLayout = false; update(); }
+    function updateNodeSizes() { if (!simulation) return; const sD = BASE_NODE_DIMENSION * currentNodeSizeFactor; simulation.force('collide').radius((sD * 0.55) + 25); simulation.force('charge').strength(-1800 * (sD / 160)); isInitialLayout = false; update(); }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const fcCont = g('flowchartContainer');
+        const observer = new ResizeObserver(entries => {
+            const entry = entries[0];
+            if (entry.contentRect.width > 0) {
+                initializeApp();
+                observer.disconnect();
+            }
+        });
+        observer.observe(fcCont);
+    });
+
+    function initializeApp() {
+        initD3();
+        const tooltip = g('tooltip');
+        if (tooltip) { document.querySelectorAll('nav button[data-tooltip-text]').forEach(button => { button.addEventListener('mouseenter', () => { tooltip.textContent = button.dataset.tooltipText; const rect = button.getBoundingClientRect(); tooltip.style.top = `${rect.bottom + 8}px`; tooltip.style.left = `${rect.left + rect.width / 2}px`; tooltip.classList.add('visible'); }); button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); }); }
+        document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { const color = swatch.dataset.color, opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (color) swatch.style.backgroundColor = hexToRgba(color, opacity); });
+        const themeToggleBtn = g('themeToggleBtn'), body = document.body, prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+        function applyTheme(theme) { body.classList.toggle('dark-mode', theme === 'dark'); themeToggleBtn.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; }
+        const savedTheme = localStorage.getItem('theme') || (prefersDark.matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+        themeToggleBtn.addEventListener('click', () => { const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark'; applyTheme(newTheme); localStorage.setItem('theme', newTheme); });
+        g('aiAssistantBtn').onclick = openAIAssistant;
+        g('nodeSizeIncreaseBtn').onclick = () => { if (currentNodeSizeFactor < MAX_NODE_SIZE_FACTOR) { currentNodeSizeFactor = parseFloat((currentNodeSizeFactor + NODE_SIZE_STEP).toFixed(2)); isInitialLayout = false; updateNodeSizes(); } };
+        g('nodeSizeDecreaseBtn').onclick = () => { if (currentNodeSizeFactor > MIN_NODE_SIZE_FACTOR) { currentNodeSizeFactor = parseFloat((currentNodeSizeFactor - NODE_SIZE_STEP).toFixed(2)); isInitialLayout = false; updateNodeSizes(); } };
+        g('colorLegendBtn').onclick = openColorLegendModal;
+        g('closeColorLegendModal').onclick = () => g('colorLegendModal').style.display = 'none';
+        g('colorLegendForm').onsubmit = saveColorLegend;
+        g('templateBtn').onclick = () => { g('templateModal').style.display = 'block'; };
+        document.querySelectorAll('#templateModal .modal-btn').forEach((b) => (b.onclick = (e) => { loadTemplate(e.target.dataset.template); g('templateModal').style.display = 'none'; }));
+        const addConnBtn = g('addConnectorBtn');
+        addConnBtn.addEventListener('click', () => { 
+            connectorMode = !connectorMode; 
+            connectorStartNode = null; 
+            addConnBtn.classList.toggle('active', connectorMode); 
+            g('flowchart').style.cursor = connectorMode ? 'crosshair' : 'default'; 
+            // If connector mode is turned off, remove any lingering visual feedback
+            if (!connectorMode) {
+                nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
+            }
+        });
+        g('addNodeBtn').onclick = (e) => { e.preventDefault(); const nN = createNode(selectedNode); if (nN) { selectedNode = nN; nodeClick({ stopPropagation: () => {}, defaultPrevented: false }, nN); } };
+        g('saveBtn').onclick = saveToFile;
+        g('uploadBtn').onclick = () => g('fileInput').click();
+        g('fileInput').onchange = (e) => { if (e.target.files.length > 0) loadFromFile(e.target.files[0]); };
+        g('userGuideBtn').onclick = () => { g('userGuideModal').style.display = 'block'; };
+        g('closeUserGuideModal').onclick = () => g('userGuideModal').style.display = 'none';
+        g('shareBtn').onclick = () => g('shareModal').style.display = 'block';
+        g('closeShareModal').onclick = () => g('shareModal').style.display = 'none';
+        g('projectDescBtn').onclick = () => { const pd = data.projectDescription || {}; g('projectSummary').textContent = (pd.summary && pd.generatedDate) ? pd.summary : 'File does not contain a Project Description.'; g('projectGeneratedDate').textContent = (pd.summary && pd.generatedDate) ? `Generated: ${pd.generatedDate}` : ''; g('projectDescModal').style.display = 'block'; };
+        document.querySelectorAll('.modal .close-button').forEach((b) => { if (!['closeUserGuideModal','closeProjectDescModal','closeShareModal','closeColorLegendModal'].includes(b.id)) b.onclick = (e) => { e.stopPropagation(); b.closest('.modal').style.display = 'none'; }; });
+        g('closeProjectDescModal').onclick = (e) => { e.stopPropagation(); g('projectDescModal').style.display = 'none'; };
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+        g('taskForm').onsubmit = (e) => { e.preventDefault(); if (selectedNode) { let tsks = []; g('taskTable').querySelectorAll('tbody tr').forEach((r) => { let chk = r.querySelector('input[type="checkbox"]'), txt = r.querySelector('textarea.task-detail-textarea'); if (txt && txt.value.trim() !== '') tsks.push({ completed: chk.checked, task: txt.value.trim() }); }); Object.assign(selectedNode, { name: g('taskName').value, responsible: g('responsible').value, status: g('status').value, deadline: g('deadline').value, priority: g('priority').value, actionDescription: JSON.stringify(tsks), color: g('nodeColor').value || null, }); selectedNode.fx = selectedNode.x; selectedNode.fy = selectedNode.y; isInitialLayout = false; update(); } g('modal').style.display = 'none'; };
+        const closeDeleteLinkModal = () => { g('deleteLinkModal').style.display = 'none'; linkGroup.selectAll('line.link').classed('selected', false); selectedLink = null; }
+        g('confirmDeleteLinkBtn').onclick = () => { if (selectedLink) { data.links = data.links.filter(l => l !== selectedLink); isInitialLayout = false; update(); } closeDeleteLinkModal(); };
+        g('cancelDeleteLinkBtn').onclick = closeDeleteLinkModal;
+        g('addTaskRowBtn').addEventListener('click', () => addTaskRow({}));
+        g('deleteTaskBtn').addEventListener('click', () => { let sR = g('taskTable').querySelector('tbody tr.selectedTaskRow'); if (sR) sR.remove(); g('taskTextPopup').style.display = 'none'; });
+        g('deleteNodeBtn').addEventListener('click', () => { if (selectedNode && confirm('Delete node?')) { const selectedId = selectedNode.id; data.nodes = data.nodes.filter((n) => n.id !== selectedId); data.links = data.links.filter(l => (l.source.id || l.source) !== selectedId && (l.target.id || l.target) !== selectedId); selectedNode = null; isInitialLayout = false; update(); } g('modal').style.display = 'none'; });
+        g('flowchartNameInput').addEventListener('input', function () { data.flowchartName = this.value || 'Untitled'; });
+        if (data.nodes.length === 0) { isInitialLayout = true; loadTemplate('prototype'); } else { isInitialLayout = true; update(); }
+    }
+  </script>
+</body>
+</html>
