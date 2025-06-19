@@ -287,10 +287,20 @@
             simulation.force('link', null);
         }
 
+        // FIX: This block handles initial placement for templates or empty charts
         if (isInitialLayout) {
-            // FIX: If it's the first time loading, don't pin the nodes immediately.
-            // Let the simulation find a good initial position.
-            // Pinning happens on the first drag or after loading a file with positions.
+            const hasPositions = data.nodes.every(n => typeof n.x === 'number' && typeof n.y === 'number');
+            
+            // If nodes from a template have no positions, let the simulation place them.
+            if (!hasPositions) {
+                // The simulation will run via the restart() call at the end of update()
+            } else {
+                // If loading a file, respect the saved positions and pin them.
+                 data.nodes.forEach(d => {
+                    d.fx = d.x;
+                    d.fy = d.y;
+                });
+            }
             isInitialLayout = false;
         }
 
@@ -366,6 +376,7 @@
         simulation.alpha(0.3).restart();
     }
 
+    // FIX: Replaced with the more intelligent, angle-based function
     function getIntersectionPoint(sourceNode, targetNode, width, height) {
         const sx = sourceNode.x, sy = sourceNode.y;
         const tx = targetNode.x, ty = targetNode.y;
@@ -426,7 +437,6 @@
                     updateProjectDescButton();
                     g('fileNameDisplay').innerText = `Loaded: ${f.name}`;
                     isInitialLayout = true;
-                    // When loading a file, we want to respect the saved positions.
                     data.nodes.forEach(d => {
                       d.fx = d.x;
                       d.fy = d.y;
