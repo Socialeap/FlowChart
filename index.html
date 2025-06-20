@@ -1170,7 +1170,11 @@
         
         g('saveBtn').onclick = saveToFile;
         
-        g('uploadBtn').onclick = () => g('fileInput').click();
+        g('uploadBtn').onclick = () => { 
+            g('fileInput').click(); 
+            // NEW: Clear the file input value after a click to ensure onchange fires even if same file is selected
+            g('fileInput').value = '';
+        };
         g('fileInput').onchange = (e) => { if (e.target.files.length > 0) loadFromFile(e.target.files[0]); };
         g('userGuideBtn').onclick = () => { g('userGuideModal').style.display = 'block'; };
         g('closeUserGuideModal').onclick = () => g('userGuideModal').style.display = 'none';
@@ -1256,6 +1260,26 @@
                 updateConnectorModalArrowButtons(); 
             }
         });
+
+        // MODIFIED: updateConnectorModalArrowButtons to change text and icon
+        function updateConnectorModalArrowButtons() {
+            const addRemoveArrowBtn = g('addRemoveArrowBtn');
+            const addRemoveArrowIcon = g('addRemoveArrowIcon');
+            const addRemoveArrowText = g('addRemoveArrowText');
+            const switchArrowDirectionBtn = g('switchArrowDirectionBtn');
+
+            if (selectedLink.arrowDirection === 'none') {
+                addRemoveArrowBtn.classList.remove('selected');
+                addRemoveArrowIcon.className = 'fas fa-plus-circle';
+                addRemoveArrowText.textContent = 'Add Arrow';
+                switchArrowDirectionBtn.classList.add('disabled');
+            } else {
+                addRemoveArrowBtn.classList.add('selected');
+                addRemoveArrowIcon.className = 'fas fa-minus-circle';
+                addRemoveArrowText.textContent = 'Remove Arrow';
+                switchArrowDirectionBtn.classList.remove('disabled');
+            }
+        }
 
         g('saveConnectorOptionsBtn').onclick = (e) => {
             e.preventDefault(); 
