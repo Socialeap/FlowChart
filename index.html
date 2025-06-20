@@ -92,7 +92,8 @@
     #banner-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding-top: 50px; overflow-y: auto; }
     .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); color: var(--modal-text); margin: 20px auto; padding: 2rem; width: 90%; max-width: 750px; overflow-y: auto; max-height: calc(100vh - 100px); border-radius: 20px; position: relative; box-shadow: var(--modal-strong-shadow); transition: background 0.3s ease, border-color 0.3s ease; }
-    #deleteLinkModal .modal-content, #colorLegendModal .modal-content { max-width: 500px; }
+    /* MODIFIED: Adjusted max-width for the new connector options modal */
+    #connectorOptionsModal .modal-content, #colorLegendModal .modal-content { max-width: 500px; }
     #color-legend-entries { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
     .legend-entry { display: flex; align-items: center; gap: 1rem; }
     .legend-color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--glass-border); flex-shrink: 0; }
@@ -122,9 +123,187 @@
     .modal-content li, #userGuideModal .modal-content li { margin-bottom: 0.7em; line-height: 1.6; }
     #userGuideModal .modal-content li strong { font-weight: 600; color: var(--modal-text); }
     .modal-content p, #userGuideModal .modal-content p { margin-bottom: 1em; line-height: 1.6; }
+    /* Styling for the task text and new view icon */
+    #taskTextPopup #taskFullText a {
+        color: var(--link-color);
+        text-decoration: underline;
+    }
+    #taskTextPopup #taskFullText a:hover {
+        text-decoration: none;
+    }
+    .instruction-text {
+        font-size: 0.85em;
+        color: var(--modal-text);
+        opacity: 0.7;
+        margin-left: 0.5em;
+        font-weight: normal;
+    }
+    
+    /* MODIFIED: Styles for the task row in the table */
+    #taskTable tbody tr td.task-cell-content { /* Target the specific td for flex */
+        display: flex; /* Make the td a flex container */
+        align-items: flex-end; /* Align items to the bottom, useful for multiline textareas */
+        gap: 8px; /* Space between textarea and icon */
+        /* Removed position: relative; here as it's not strictly necessary for flex positioning */
+    }
+
+    #taskTable tbody tr .task-detail-textarea {
+        flex-grow: 1; /* Textarea takes up most of the space */
+        min-height: 38px; /* Ensure a consistent base height */
+        overflow: hidden; /* Hide scrollbar */
+        resize: none; /* Prevent manual resizing by user to ensure auto-height works */
+        border-radius: 12px; /* Ensure all corners are rounded */
+        box-sizing: border-box; /* Include padding/border in element's total width and height */
+        padding-right: 12px; /* Ensure sufficient internal padding */
+    }
+
+    .task-view-icon {
+        flex-shrink: 0; /* Prevent icon from shrinking */
+        font-size: 1.1em;
+        color: var(--close-button-color); /* Use a subtle color */
+        cursor: pointer;
+        transition: color 0.2s ease, transform 0.2s ease;
+        padding: 5px; /* Make it easier to click */
+        border-radius: 50%; /* Make it look like a button */
+        margin-bottom: 3px; /* slight adjustment to align with textarea base */
+    }
+    .task-view-icon:hover {
+        color: var(--close-button-hover-color);
+        transform: scale(1.1); /* No translateY needed if not absolutely positioned */
+        background: rgba(255, 255, 255, 0.1);
+    }
+    /* Adjust task table header for the new icon column if desired, or let it implicitly align */
+    #taskTable thead th:last-child {
+        /* If you wanted a header for the icon, you'd add another <th> */
+        /* For now, just ensure 'Task' column has enough width */
+    }
+
+    /* NEW CSS for color panel visibility and layout */
+    .color-panel {
+        display: flex; /* Makes it a flex container */
+        flex-wrap: wrap; /* Allows swatches to wrap to the next line if needed */
+        gap: 10px; /* Adds space between color swatches */
+        justify-content: center; /* Centers the swatches horizontally */
+        margin-top: 5px; /* Add a little space above the panel */
+    }
+    .color-swatch {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 2px solid var(--glass-border);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        flex-shrink: 0; /* Prevent swatches from shrinking */
+    }
+    .color-swatch.selected-swatch {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 3px var(--modal-text); /* Highlight selected swatch */
+    }
+    .color-swatch:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 2px var(--modal-text);
+    }
+
+    /* NEW: Styles for Connector Options Modal */
+    #connectorOptionsModal .modal-content h2 {
+        text-align: center;
+    }
+    #connectorOptionsModal label {
+        display: block;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--modal-text);
+    }
+    /* MODIFIED: Layout for the arrow controls */
+    .arrow-controls-group { /* New container for Add and Switch buttons */
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    }
+    .style-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    .line-style-btn, .arrow-control-btn { /* Combined class for new arrow buttons */
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--modal-text);
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 0.95em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex: 1; /* Allows buttons to grow and fill available space evenly */
+        min-width: 90px; /* Ensure consistent minimum button size */
+    }
+    .line-style-btn i, .arrow-control-btn i { /* Combined icon styling */
+        font-size: 1.1em;
+    }
+    /* Styles for selected/active state */
+    .line-style-btn.selected, .arrow-control-btn.selected {
+        background: var(--button-hover-bg); 
+        border-color: var(--link-selected-color); 
+        box-shadow: 0 0 0 2px var(--link-selected-color);
+        color: var(--text-on-header); 
+    }
+    /* Hover effects for non-selected buttons */
+    .line-style-btn:hover:not(.selected), .arrow-control-btn:hover:not(.selected) {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+    }
+    /* Styling for disabled buttons */
+    .arrow-control-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none; /* Prevent clicks */
+        transform: translateY(0) !important; /* Override hover transform */
+        box-shadow: none !important; /* Override hover shadow */
+    }
+
+    .link-options-action-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .link-options-action-buttons .modal-btn {
+        flex: 1; 
+    }
+
+    /* Styles for D3.js SVG Arrows */
+    .link-arrow {
+        pointer-events: none; /* Do not block clicks on the line */
+        fill: var(--link-color); /* Arrow color defaults to link color */
+        transition: fill 0.3s ease;
+    }
+    .link.selected + .link-arrow { /* If link is selected, change arrow color */
+        fill: var(--link-selected-color) !important;
+    }
+    /* NEW: Styles for the wider transparent hit area line */
+    line.link-hit-area {
+        stroke: transparent;
+        stroke-width: 15px; /* Make this much wider than the visible line */
+        cursor: pointer; /* Ensure it still shows pointer cursor */
+        pointer-events: stroke; /* Only respond to clicks on the stroke itself */
+    }
+    /* Ensure the visible line doesn't capture clicks */
+    line.link-visible {
+        pointer-events: none; /* Let clicks pass through to the hit area */
+    }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
 </head>
 
 <body>
@@ -151,11 +330,28 @@
   <div id="color-legend-display"></div>
 
   <div id="flowchartContainer">
+    <svg id="flowchart">
+      <defs>
+        <polygon id="central-arrow-shape" points="0,-20 40,0 0,20" /> 
+      </defs>
+    </svg>
     <div id="banner-container"><iframe src="https://transcendence.media/SmartWealth-Banner" allowtransparency="true" scrolling="no" frameborder="0"></iframe></div>
-    <svg id="flowchart"></svg>
   </div>
 
-  <div id="modal" class="modal"><div class="modal-content"><span class="close-button" id="closeModal">×</span><h2>Task Details</h2><form id="taskForm"><label>Task Name: <textarea id="taskName" required></textarea></label><label>Responsible: <input type="text" id="responsible" /></label><label>Status:<select id="status"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></label><label>Deadline: <input type="date" id="deadline" /></label><label>Priority:<select id="priority"><option value="Low">Low</option><option value="Normal">Normal</option><option value="High">High</option></select></label><label>Action Description (Sub-tasks):</label><table id="taskTable"><thead><tr><th style="width: 30px;">✓</th><th>Task</th></tr></thead><tbody></tbody></table><button type="button" id="addTaskRowBtn" class="modal-btn">Add Task</button><label>Node Color:</label><input type="hidden" id="nodeColor" /><div class="color-panel"><div class="color-swatch" data-color="#e74c3c"></div><div class="color-swatch" data-color="#f1c40f"></div><div class="color-swatch" data-color="#2ecc71"></div><div class="color-swatch" data-color="#3498db"></div><div class="color-swatch" data-color="#9b59b6"></div><div class="color-swatch" data-color="#34495e"></div></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Node</button><button type="button" class="modal-btn" id="addNodeBtn">Add Child Node</button></div><div style="text-align: center; margin-top: 20px;"><button type="button" id="deleteNodeBtn" class="modal-btn danger">Delete Node</button></div></form></div></div>
+  <div id="modal" class="modal"><div class="modal-content"><span class="close-button" id="closeModal">×</span><h2>Task Details</h2><form id="taskForm"><label>Task Name: <textarea id="taskName" required></textarea></label><label>Responsible: <input type="text" id="responsible" /></label><label>Status:<select id="status"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></label><label>Deadline: <input type="date" id="deadline" /></label><label>Priority:<select id="priority"><option value="Low">Low</option><option value="Normal">Normal</option><option value="High">High</option></select></label>
+  <label>Action Description (Sub-tasks):</label>
+  <table id="taskTable"><thead><tr><th style="width: 30px;">✓</th><th>Tasks</th></tr></thead><tbody></tbody></table><button type="button" id="addTaskRowBtn" class="modal-btn">Add Task</button>
+  <label>Node Color:</label>
+  <input type="hidden" id="nodeColor" />
+  <div class="color-panel">
+      <div class="color-swatch" data-color="#e74c3c"></div>
+      <div class="color-swatch" data-color="#f1c40f"></div>
+      <div class="color-swatch" data-color="#2ecc71"></div>
+      <div class="color-swatch" data-color="#3498db"></div>
+      <div class="color-swatch" data-color="#9b59b6"></div>
+      <div class="color-swatch" data-color="#34495e"></div>
+  </div>
+  <div class="action-buttons"><button type="submit" class="modal-btn">Save Node</button><button type="button" class="modal-btn" id="addNodeBtn">Add Child Node</button></div><div style="text-align: center; margin-top: 20px;"><button type="button" id="deleteNodeBtn" class="modal-btn danger">Delete Node</button></div></form></div></div>
   <div id="templateModal" class="modal"><div class="modal-content"><span class="close-button" id="closeTemplateModal">×</span><h2>Select Template</h2><div style="display: flex; flex-direction: column; gap: 1rem;"><button class="modal-btn" data-template="prototype">Prototype Development</button><button class="modal-btn" data-template="vendor">Vendor Outreach</button><button class="modal-btn" data-template="marketing">Marketing Campaign</button></div></div></div>
   <div id="taskTextPopup" class="modal"><div class="modal-content"><span class="close-button" id="closeTaskPopup">×</span><p id="taskFullText" style="white-space: pre-wrap; max-height: 60vh; overflow-y: auto;"></p><button id="deleteTaskBtn" class="modal-btn danger">Delete Task</button></div></div>
   <div id="userGuideModal" class="modal">
@@ -179,7 +375,8 @@
       <h3>🧩 Working with Tasks</h3>
       <ul>
         <li>Click any node to view or edit its details.</li>
-        <li>To delete a specific sub-task, simply double-click on its text field within the node details popup.</li>
+        <li>To view full sub-task details, including clickable links, click the <i class="fas fa-eye"></i> icon next to the task.</li>
+        <li>To delete a specific sub-task, use the "Delete Task" button after viewing it in the popup.</li>
         <li>Completing fields like Responsible, Deadline, and Priority helps align your workflow, track progress, and maintain clarity.</li>
       </ul>
        <h3><i class="fas fa-lightbulb"></i> GPT FlowChart Assistant</h3>
@@ -194,18 +391,39 @@
                 </ul>
             </li>
         </ul>
-      <!-- Feedback Button Start -->
-<div style="text-align: center; margin-top: 2rem;">
+      <div style="text-align: center; margin-top: 2rem;">
     <a href="https://form.jotform.com/Transcendence_Media/flowchart-feedback-form" target="_blank" class="modal-btn" style="text-decoration: none; display: inline-block;">
         <i class="fas fa-comment-alt"></i> Share Your Feedback
     </a>
 </div>
-<!-- Feedback Button End -->
+</div>
+  </div>
+  <div id="connectorOptionsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="closeConnectorOptionsModal">×</span>
+        <h2>Connector Options</h2>
+        <form id="connectorOptionsForm">
+            <label>Line Style:</label>
+            <div class="style-options">
+                <button type="button" class="modal-btn line-style-btn" data-style="solid"><i class="fas fa-minus"></i> Solid</button>
+                <button type="button" class="modal-btn line-style-btn" data-style="dotted"><i class="fas fa-dot-circle"></i> Dotted</button>
+            </div>
+
+            <label>Arrow:</label>
+            <div class="arrow-controls-group">
+                <button type="button" class="modal-btn arrow-control-btn" id="addRemoveArrowBtn"><i class="fas fa-plus-circle" id="addRemoveArrowIcon"></i> <span id="addRemoveArrowText">Add Arrow</span></button>
+                <button type="button" class="modal-btn arrow-control-btn" id="switchArrowDirectionBtn"><i class="fas fa-arrows-alt-h"></i> Switch Direction</button>
+            </div>
+            
+            <div class="link-options-action-buttons">
+                <button type="submit" class="modal-btn" id="saveConnectorOptionsBtn">Save Options</button>
+                <button type="button" id="confirmDeleteLinkBtn" class="modal-btn danger">Delete Connector</button>
+            </div>
+        </form>
     </div>
   </div>
   <div id="shareModal" class="modal"><div class="modal-content"><span class="close-button" id="closeShareModal">×</span><h2>Share Flowchart</h2><iframe src="https://view.genially.com/6845a98ee4504c754b83f421" allowfullscreen="true" scrolling="no" frameborder="0"></iframe></div></div>
   <div id="projectDescModal" class="modal"><div class="modal-content"><span class="close-button" id="closeProjectDescModal">×</span><h2>Project Description</h2><p id="projectSummary"></p><p id="projectGeneratedDate"></p></div></div>
-  <div id="deleteLinkModal" class="modal"><div class="modal-content"><span class="close-button" id="cancelDeleteLinkBtn">×</span><h2>Delete Connector</h2><p>Are you sure you want to delete this connection?</p><div class="action-buttons"><button id="confirmDeleteLinkBtn" class="modal-btn danger">Delete</button></div></div></div>
   <div id="colorLegendModal" class="modal"><div class="modal-content"><span class="close-button" id="closeColorLegendModal">×</span><h2>Edit Color Legend</h2><form id="colorLegendForm"><p>Define what each color represents. These will be shown in a legend below the header.</p><div id="color-legend-entries"></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Legend</button></div></form></div></div>
   <div id="tooltip"></div>
 
@@ -232,20 +450,17 @@
 
     // Helper function to get safe positioning coordinates within the visible area
     function getSafePositioningArea() {
-        // Use container dimensions and viewBox for reliable calculations
         const fcCont = g('flowchartContainer');
         const containerWidth = fcCont.clientWidth;
         const containerHeight = fcCont.clientHeight;
         
-        // Get viewBox dimensions - these should be available after initD3()
         const vB = svg.attr('viewBox').split(' ');
         const viewBoxWidth = parseFloat(vB[2]);
         const viewBoxHeight = parseFloat(vB[3]);
         
-        // Calculate safe margins as percentages of viewBox
-        const topMarginPercent = 0.15; // 15% from top
-        const sideMarginPercent = 0.1; // 10% from sides
-        const bottomMarginPercent = 0.1; // 10% from bottom
+        const topMarginPercent = 0.15; 
+        const sideMarginPercent = 0.1; 
+        const bottomMarginPercent = 0.1; 
         
         const topMargin = viewBoxHeight * topMarginPercent;
         const sideMargin = viewBoxWidth * sideMarginPercent;
@@ -267,14 +482,22 @@
         const fcCont = g('flowchartContainer');
         const cW = fcCont.clientWidth, cH = fcCont.clientHeight;
         const vW = Math.max(cW * 1.5, 2000), vH = Math.max(cH * 1.5, 1500);
+        
         svg = d3.select('#flowchart').attr('viewBox', `0 0 ${vW} ${vH}`);
+        
+        svg.html(''); 
+
+        svg.append('defs')
+            .append('polygon')
+            .attr('id', 'central-arrow-shape')
+            .attr('points', '0,-20 40,0 0,20'); 
+
         mainZoomGroup = svg.append('g').attr('class', 'zoom-group');
         linkGroup = mainZoomGroup.append('g').attr('class', 'links');
         nodeGroup = mainZoomGroup.append('g').attr('class', 'nodes');
         
-        // Use simple, reliable center calculation
         const centerX = vW / 2;
-        const centerY = vH * 0.4; // Position at 40% down from top instead of middle
+        const centerY = vH * 0.4; 
         
         simulation = d3.forceSimulation()
             .force('charge', d3.forceManyBody().strength(-1800 * (BASE_NODE_DIMENSION / 160)))
@@ -294,12 +517,38 @@
         nodeGroup.selectAll('g.node-group')
             .attr('transform', d => `translate(${d.x},${d.y})`);
         
-        linkGroup.selectAll('line.link').each(function(d) {
+        // MODIFIED: Update both the hit area line and the visible line
+        linkGroup.selectAll('.link-container').each(function(d) {
             if (d.source && d.target) {
                 const sourcePoint = getIntersectionPoint(d.source, d.target, currentScaledDimension, currentScaledDimension);
                 const targetPoint = getIntersectionPoint(d.target, d.source, currentScaledDimension, currentScaledDimension);
-                d3.select(this).attr('x1', sourcePoint.x).attr('y1', sourcePoint.y).attr('x2', targetPoint.x).attr('y2', targetPoint.y);
+                
+                d3.select(this).selectAll('line') // Select both lines within the container
+                    .attr('x1', sourcePoint.x)
+                    .attr('y1', sourcePoint.y)
+                    .attr('x2', targetPoint.x)
+                    .attr('y2', targetPoint.y);
             }
+        });
+
+        // Update position and rotation of arrows
+        mainZoomGroup.selectAll('g.link-arrow').each(function(d) {
+            if (!d.source || !d.target) return; 
+
+            const sx = d.source.x, sy = d.source.y;
+            const tx = d.target.x, ty = d.target.y;
+
+            const midX = (sx + tx) / 2;
+            const midY = (sy + ty) / 2;
+            const angleRad = Math.atan2(ty - sy, tx - sx);
+            let angleDeg = angleRad * 180 / Math.PI;
+
+            if (d.arrowDirection === 'backward') { 
+                angleDeg += 180; 
+            } 
+            
+            d3.select(this)
+                .attr('transform', `translate(${midX},${midY}) rotate(${angleDeg})`);
         });
     }
 
@@ -331,15 +580,11 @@
             simulation.force('link', null);
         }
 
-        // FIX: This block handles initial placement for templates or empty charts
         if (isInitialLayout) {
             const hasPositions = data.nodes.every(n => typeof n.x === 'number' && typeof n.y === 'number');
             
-            // If nodes from a template have no positions, let the simulation place them.
             if (!hasPositions) {
-                // The simulation will run via the restart() call at the end of update()
             } else {
-                // If loading a file, respect the saved positions and pin them.
                  data.nodes.forEach(d => {
                     d.fx = d.x;
                     d.fy = d.y;
@@ -348,9 +593,51 @@
             isInitialLayout = false;
         }
 
-        let link = linkGroup.selectAll('line.link').data(data.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
-        link.exit().remove();
-        link = link.enter().append('line').attr('class', 'link').attr('stroke', 'var(--link-color)').attr('stroke-width', 2.5).on('click', linkClickHandler).merge(link);
+        // NEW: Create a container group for each link that will hold both the hit area and the visible line
+        let linkContainer = linkGroup.selectAll('g.link-container')
+            .data(data.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
+
+        linkContainer.exit().remove();
+
+        let linkContainerEnter = linkContainer.enter().append('g')
+            .attr('class', 'link-container');
+        
+        // Append the hit area line first (so it's behind the visible line visually)
+        linkContainerEnter.append('line')
+            .attr('class', 'link-hit-area')
+            .on('click', linkClickHandler); // Attach handler to hit area
+
+        // Append the visible line
+        linkContainerEnter.append('line')
+            .attr('class', 'link-visible')
+            .attr('stroke', 'var(--link-color)')
+            .attr('stroke-width', 2.5);
+
+        linkContainer = linkContainerEnter.merge(linkContainer);
+
+        // Apply selected class to the container, which CSS will use to style the visible line
+        linkContainer.classed('selected', d => d === selectedLink);
+        
+        // Update the visible line's dash array
+        linkContainer.select('line.link-visible')
+            .attr('stroke-dasharray', d => d.lineStyle === 'dotted' ? '5,5' : 'none');
+
+        // D3 selection for arrows
+        // Filter explicitly for 'forward' or 'backward' for arrow display
+        let arrows = mainZoomGroup.selectAll('g.link-arrow')
+            .data(data.links.filter(d => d.arrowDirection === 'forward' || d.arrowDirection === 'backward'), d => d.id);
+
+        arrows.exit().remove(); 
+
+        let arrowsEnter = arrows.enter().append('g')
+            .attr('class', 'link-arrow')
+            .append('use')
+            .attr('href', '#central-arrow-shape'); 
+
+        arrows = arrowsEnter.merge(arrows); 
+
+        // Update styling for arrows (e.g., color)
+        arrows.select('use').attr('fill', 'var(--link-color)'); 
 
         let node = nodeGroup.selectAll('g.node-group').data(data.nodes, d => d.id);
         node.exit().remove();
@@ -377,7 +664,12 @@
                         ((l.source.id || l.source) === d.id && (l.target.id || l.target) === connectorStartNode.id)
                     );
                     if (!linkExists) {
-                        data.links.push({ source: connectorStartNode.id, target: d.id });
+                        data.links.push({ 
+                            source: connectorStartNode.id, 
+                            target: d.id,
+                            lineStyle: 'solid',
+                            arrowDirection: 'none' 
+                        });
                         update();
                     }
                     connectorMode = false;
@@ -420,7 +712,6 @@
         simulation.alpha(0.3).restart();
     }
 
-    // FIX: Replaced with the more intelligent, angle-based function
     function getIntersectionPoint(sourceNode, targetNode, width, height) {
         const sx = sourceNode.x, sy = sourceNode.y;
         const tx = targetNode.x, ty = targetNode.y;
@@ -461,13 +752,104 @@
     }
     
     function openAIAssistant() { const url = 'https://chatgpt.com/g/g-678c450b02988191b07d47c7a5bd9d4a-flow-chart-assistant'; const sW = window.screen.availWidth, sH = window.screen.availHeight, bS = Math.min(sW, sH); const pW = Math.floor(bS * 0.45), pH = Math.floor(bS * 0.55), l = Math.floor((sW - pW) / 2), t = Math.floor((sH - pH) / 2); window.open(url, 'FlowchartAIAssistant', `width=${pW},height=${pH},left=${l},top=${t},resizable=yes,scrollbars=yes`); }
-    function addTaskRow(t) { const tb = g('taskTable').querySelector('tbody'), tr = document.createElement('tr'); tr.addEventListener('click', function () { document.querySelectorAll('#taskTable tbody tr').forEach((r) => r.classList.remove('selectedTaskRow')); this.classList.add('selectedTaskRow'); }); const tdC = document.createElement('td'), cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t && t.completed; tdC.appendChild(cb); const tdT = document.createElement('td'), ti = document.createElement('textarea'); ti.classList.add('task-detail-textarea'); ti.value = t && t.task ? t.task : ''; ti.rows = 1; ti.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; }); ti.addEventListener('dblclick', (e) => { e.stopPropagation(); tr.classList.add('selectedTaskRow'); showTaskPopup(ti.value); }); tdT.appendChild(ti); tr.appendChild(tdC); tr.appendChild(tdT); tb.appendChild(tr); ti.dispatchEvent(new Event('input')); }
+    
+    function addTaskRow(t) {
+        const tb = g('taskTable').querySelector('tbody');
+        const tr = document.createElement('tr');
+        
+        tr.addEventListener('click', function () {
+            document.querySelectorAll('#taskTable tbody tr').forEach((r) => r.classList.remove('selectedTaskRow'));
+            this.classList.add('selectedTaskRow');
+        });
+
+        const tdC = document.createElement('td');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = t && t.completed;
+        tdC.appendChild(cb);
+
+        const tdT = document.createElement('td'); 
+        tdT.classList.add('task-cell-content'); 
+        
+        const ti = document.createElement('textarea');
+        ti.classList.add('task-detail-textarea');
+        ti.value = t && t.task ? t.task : '';
+        ti.rows = 1;
+        ti.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+        
+        const viewIcon = document.createElement('i');
+        viewIcon.classList.add('fas', 'fa-eye', 'task-view-icon');
+        viewIcon.setAttribute('title', 'View full task details and links'); 
+        
+        viewIcon.addEventListener('click', function(e) {
+            e.stopPropagation(); 
+            tr.classList.add('selectedTaskRow'); 
+            
+            console.log('Eye icon clicked!');
+            console.log('Attempting to show popup with text:', ti.value);
+
+            showTaskPopup(ti.value); 
+        });
+
+        tdT.appendChild(ti);
+        tdT.appendChild(viewIcon);
+
+        tr.appendChild(tdC);
+        tr.appendChild(tdT); 
+        tb.appendChild(tr);
+        ti.dispatchEvent(new Event('input')); 
+    }
+
     function populateTaskTable(str) { const tb = g('taskTable').querySelector('tbody'); tb.innerHTML = ''; let arr = []; try { arr = JSON.parse(str); if (!Array.isArray(arr)) arr = str.trim() ? [{ completed: false, task: str }] : []; } catch (e) { arr = str.trim() ? [{ completed: false, task: str }] : []; } if (Array.isArray(str)) arr = str; if (arr.length > 0) arr.forEach((t) => addTaskRow(t)); else addTaskRow({}); }
-    function showTaskPopup(txt) { g('taskFullText').textContent = txt; g('taskTextPopup').style.display = 'block'; }
+    
+    function showTaskPopup(txt) {
+        console.log('showTaskPopup called with:', txt);
+
+        const linkedHtml = linkifyHtml(txt, {
+            target: '_blank',           
+            rel: 'noopener noreferrer'  
+        });
+
+        const taskFullTextElement = g('taskFullText');
+        const taskTextPopupModal = g('taskTextPopup');
+
+        if (taskFullTextElement && taskTextPopupModal) {
+            taskFullTextElement.innerHTML = linkedHtml; 
+            taskTextPopupModal.style.display = 'block'; 
+            console.log('taskTextPopup and taskFullText elements found. Modal display set to block.');
+        } else {
+            console.error('Error: Could not find taskFullText or taskTextPopup elements. Please check your HTML IDs.');
+        }
+    }
+    
     function updateProjectDescButton() { const hasDesc = data.projectDescription && data.projectDescription.summary.trim().length > 0; g('projectDescBtn').style.display = hasDesc ? 'inline-flex' : 'none'; }
     function nodeClick(ev, d) { ev.stopPropagation(); selectedNode = d; g('taskName').value = d.name || ''; g('responsible').value = d.responsible || ''; g('status').value = d.status || 'Not Started'; g('deadline').value = d.deadline || ''; g('priority').value = d.priority || 'Normal'; populateTaskTable(d.actionDescription || ''); g('nodeColor').value = d.color || ''; document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch')); if (d.color) { const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`); if (sS) sS.classList.add('selected-swatch'); } g('modal').style.display = 'block'; }
     
-    function saveToFile() { try { data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; const expD = { flowchartName: data.flowchartName, projectDescription: data.projectDescription, nodes: data.nodes.map(n => ({ id: n.id, name: n.name, status: n.status, responsible: n.responsible, deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy })), links: data.links.map(l => ({ source: l.source.id || l.source, target: l.target.id || l.target })), colorLegend: data.colorLegend }; const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } }
+    function saveToFile() { 
+        try { 
+            data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; 
+            const expD = { 
+                flowchartName: data.flowchartName, 
+                projectDescription: data.projectDescription, 
+                nodes: data.nodes.map(n => ({ 
+                    id: n.id, name: n.name, status: n.status, responsible: n.responsible, 
+                    deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, 
+                    color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy 
+                })), 
+                links: data.links.map(l => ({ 
+                    source: l.source.id || l.source, 
+                    target: l.target.id || l.target,
+                    lineStyle: l.lineStyle || 'solid', 
+                    arrowDirection: l.arrowDirection || 'none' 
+                })), 
+                colorLegend: data.colorLegend 
+            }; 
+            const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); 
+        } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } 
+    }
     
     function loadFromFile(f) { 
         if (!f) { alert('No file selected.'); return; }
@@ -484,6 +866,10 @@
                     data.nodes.forEach(d => {
                       d.fx = d.x;
                       d.fy = d.y;
+                    });
+                    data.links.forEach(l => {
+                        l.lineStyle = l.lineStyle || 'solid';
+                        l.arrowDirection = l.arrowDirection || 'none';
                     });
                     update();
                 } else {
@@ -506,15 +892,13 @@
         data.colorLegend = {}; 
         updateProjectDescButton(); 
         
-        // Get current viewBox dimensions
         const vB = svg.attr('viewBox').split(' ');
         const vW = parseFloat(vB[2]);
         const vH = parseFloat(vB[3]);
         
-        // Position nodes in visible center area (40% down from top)
         const centerX = vW / 2;
         const centerY = vH * 0.4;
-        const nodeSpacing = BASE_NODE_DIMENSION * 1.4; // Space between nodes
+        const nodeSpacing = BASE_NODE_DIMENSION * 1.4; 
         
         switch (tmpl) { 
             case 'prototype': 
@@ -580,24 +964,24 @@
                         name: 'Market Research', 
                         status: 'Completed', 
                         color: '#2ecc71',
-                        x: centerX - nodeSpacing,
-                        y: centerY
+                        x: centerX,
+                        y: centerY - nodeSpacing / 2 
                     }, 
                     { 
                         id: '2', 
                         name: 'Develop Strategy', 
                         status: 'In Progress', 
                         color: '#f1c40f',
-                        x: centerX,
-                        y: centerY
+                        x: centerX - nodeSpacing / 2, 
+                        y: centerY + nodeSpacing / 2
                     }, 
                     { 
                         id: '3', 
                         name: 'Launch Campaign', 
                         status: 'Not Started', 
                         color: '#e74c3c',
-                        x: centerX + nodeSpacing,
-                        y: centerY
+                        x: centerX + nodeSpacing / 2, 
+                        y: centerY + nodeSpacing / 2
                     }
                 ]; 
                 break; 
@@ -616,13 +1000,11 @@
                 g('flowchartNameInput').value = data.flowchartName; 
         } 
         
-        // Set common properties for all template nodes and pin them
         data.nodes.forEach(n => { 
             n.actionDescription = '[]'; 
             n.responsible = n.responsible || '';
             n.deadline = n.deadline || '';
             n.priority = n.priority || 'Normal';
-            // Pin template nodes to their assigned positions
             n.fx = n.x; 
             n.fy = n.y; 
         }); 
@@ -630,7 +1012,57 @@
         isInitialLayout = true; 
         update(); 
     }
-    function linkClickHandler(event, d) { event.stopPropagation(); selectedLink = d; linkGroup.selectAll('line.link').classed('selected', l => l === selectedLink); g('deleteLinkModal').style.display = 'block'; }
+
+    function linkClickHandler(event, d) { 
+        event.stopPropagation(); 
+        selectedLink = d; 
+        linkGroup.selectAll('g.link-container').classed('selected', false); 
+        d3.select(this.parentNode).classed('selected', true); 
+
+        openConnectorOptionsModal(d); 
+    }
+
+    function openConnectorOptionsModal(linkData) {
+        document.querySelectorAll('#connectorOptionsModal .line-style-btn').forEach(btn => {
+            if (btn.dataset.style === (linkData.lineStyle || 'solid')) { 
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+
+        updateConnectorModalArrowButtons();
+        
+        g('connectorOptionsModal').style.display = 'block';
+    }
+
+    function updateButtonSelection(clickedButton, selector) {
+        document.querySelectorAll(selector).forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        clickedButton.classList.add('selected');
+    }
+
+    // MODIFIED: updateConnectorModalArrowButtons to change text and icon
+    function updateConnectorModalArrowButtons() {
+        const addRemoveArrowBtn = g('addRemoveArrowBtn');
+        const addRemoveArrowIcon = g('addRemoveArrowIcon');
+        const addRemoveArrowText = g('addRemoveArrowText');
+        const switchArrowDirectionBtn = g('switchArrowDirectionBtn');
+
+        if (selectedLink.arrowDirection === 'none') {
+            addRemoveArrowBtn.classList.remove('selected');
+            addRemoveArrowIcon.className = 'fas fa-plus-circle';
+            addRemoveArrowText.textContent = 'Add Arrow';
+            switchArrowDirectionBtn.classList.add('disabled');
+        } else {
+            addRemoveArrowBtn.classList.add('selected');
+            addRemoveArrowIcon.className = 'fas fa-minus-circle';
+            addRemoveArrowText.textContent = 'Remove Arrow';
+            switchArrowDirectionBtn.classList.remove('disabled');
+        }
+    }
+
     function openColorLegendModal() { const container = g('color-legend-entries'); container.innerHTML = ''; const uniqueColors = [...new Set(data.nodes.map(n => n.color).filter(c => c))]; const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); uniqueColors.forEach(color => { const entry = document.createElement('div'); entry.className = 'legend-entry'; const swatch = document.createElement('div'); swatch.className = 'legend-color-swatch'; swatch.style.backgroundColor = hexToRgba(color, opacity); const input = document.createElement('input'); input.type = 'text'; input.placeholder = `Description for ${color}`; input.dataset.color = color; input.value = data.colorLegend[color] || ''; entry.appendChild(swatch); entry.appendChild(input); container.appendChild(entry); }); g('colorLegendModal').style.display = 'block'; }
     function saveColorLegend(event) { event.preventDefault(); document.querySelectorAll('#color-legend-entries input').forEach(input => { const color = input.dataset.color, desc = input.value.trim(); if (desc) data.colorLegend[color] = desc; else delete data.colorLegend[color]; }); g('colorLegendModal').style.display = 'none'; updateLegendDisplay(); }
     function updateLegendDisplay() { const container = g('color-legend-display'); container.innerHTML = ''; const items = Object.entries(data.colorLegend); const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (items.length > 0) { items.forEach(([color, description]) => { const item = document.createElement('div'); item.className = 'legend-display-item'; const swatch = document.createElement('div'); swatch.className = 'legend-display-color'; swatch.style.backgroundColor = hexToRgba(color, opacity); const text = document.createElement('span'); text.textContent = description; item.appendChild(swatch); item.appendChild(text); container.appendChild(item); }); container.classList.add('visible'); } else { container.classList.remove('visible'); } }
@@ -640,17 +1072,14 @@
         let iX, iY;
 
         if (pN && typeof pN.x === 'number' && typeof pN.y === 'number') {
-            // Position relative to parent node, but within visible bounds
             iX = pN.x + (Math.random() * 100 - 50);
-            iY = pN.y + cSD * 1.2; // Place below parent
+            iY = pN.y + cSD * 1.2; 
         } else {
-            // Get safe area after SVG is initialized
             const safeArea = getSafePositioningArea();
             iX = safeArea.centerX + (Math.random() * 200 - 100);
             iY = safeArea.centerY + (Math.random() * 100 - 50);
         }
 
-        // Get safe bounds and ensure node stays within them
         const safeArea = getSafePositioningArea();
         iX = Math.max(safeArea.left + cSD / 2, Math.min(iX, safeArea.right - cSD / 2));
         iY = Math.max(safeArea.top + cSD / 2, Math.min(iY, safeArea.bottom - cSD / 2));
@@ -694,7 +1123,26 @@
         
         const tooltip = g('tooltip');
         if (tooltip) { document.querySelectorAll('nav button[data-tooltip-text]').forEach(button => { button.addEventListener('mouseenter', () => { tooltip.textContent = button.dataset.tooltipText; const rect = button.getBoundingClientRect(); tooltip.style.top = `${rect.bottom + 8}px`; tooltip.style.left = `${rect.left + rect.width / 2}px`; tooltip.classList.add('visible'); }); button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); }); }
-        document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { const color = swatch.dataset.color, opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (color) swatch.style.backgroundColor = hexToRgba(color, opacity); });
+        
+        document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { 
+            const color = swatch.dataset.color;
+            const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55');
+            if (color) {
+                swatch.style.backgroundColor = hexToRgba(color, opacity);
+            } else {
+                console.warn('Color swatch missing data-color attribute:', swatch); 
+            }
+        });
+
+        document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                document.querySelectorAll('.color-panel .color-swatch').forEach(s => s.classList.remove('selected-swatch'));
+                this.classList.add('selected-swatch');
+                g('nodeColor').value = this.dataset.color;
+            });
+        });
+
+
         const themeToggleBtn = g('themeToggleBtn'), body = document.body, prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
         function applyTheme(theme) { body.classList.toggle('dark-mode', theme === 'dark'); themeToggleBtn.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; }
         const savedTheme = localStorage.getItem('theme') || (prefersDark.matches ? 'dark' : 'light');
@@ -729,18 +1177,120 @@
         g('shareBtn').onclick = () => g('shareModal').style.display = 'block';
         g('closeShareModal').onclick = () => g('shareModal').style.display = 'none';
         g('projectDescBtn').onclick = () => { const pd = data.projectDescription || {}; g('projectSummary').textContent = (pd.summary && pd.generatedDate) ? pd.summary : 'File does not contain a Project Description.'; g('projectGeneratedDate').textContent = (pd.summary && pd.generatedDate) ? `Generated: ${pd.generatedDate}` : ''; g('projectDescModal').style.display = 'block'; };
-        document.querySelectorAll('.modal .close-button').forEach((b) => { if (!['closeUserGuideModal','closeProjectDescModal','closeShareModal','closeColorLegendModal'].includes(b.id)) b.onclick = (e) => { e.stopPropagation(); b.closest('.modal').style.display = 'none'; }; });
+        
+        document.querySelectorAll('.modal .close-button').forEach((b) => { 
+            const modalId = b.closest('.modal').id;
+            if (!['closeUserGuideModal','closeProjectDescModal','closeShareModal','closeColorLegendModal', 'closeConnectorOptionsModal'].includes(b.id)) { 
+                b.onclick = (e) => { 
+                    e.stopPropagation(); 
+                    b.closest('.modal').style.display = 'none'; 
+                    if (modalId === 'modal') { 
+                        selectedNode = null;
+                    }
+                }; 
+            }
+        });
         g('closeProjectDescModal').onclick = (e) => { e.stopPropagation(); g('projectDescModal').style.display = 'none'; };
-        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-        g('taskForm').onsubmit = (e) => { e.preventDefault(); if (selectedNode) { let tsks = []; g('taskTable').querySelectorAll('tbody tr').forEach((r) => { let chk = r.querySelector('input[type="checkbox"]'), txt = r.querySelector('textarea.task-detail-textarea'); if (txt && txt.value.trim() !== '') tsks.push({ completed: chk.checked, task: txt.value.trim() }); }); Object.assign(selectedNode, { name: g('taskName').value, responsible: g('responsible').value, status: g('status').value, deadline: g('deadline').value, priority: g('priority').value, actionDescription: JSON.stringify(tsks), color: g('nodeColor').value || null, }); selectedNode.fx = selectedNode.x; selectedNode.fy = selectedNode.y; isInitialLayout = false; update(); } g('modal').style.display = 'none'; };
-        const closeDeleteLinkModal = () => { g('deleteLinkModal').style.display = 'none'; linkGroup.selectAll('line.link').classed('selected', false); selectedLink = null; }
-        g('confirmDeleteLinkBtn').onclick = () => { if (selectedLink) { data.links = data.links.filter(l => l !== selectedLink); isInitialLayout = false; update(); } closeDeleteLinkModal(); };
-        g('cancelDeleteLinkBtn').onclick = closeDeleteLinkModal;
+        g('closeConnectorOptionsModal').onclick = (e) => { 
+            e.stopPropagation(); 
+            g('connectorOptionsModal').style.display = 'none';
+            linkGroup.selectAll('g.link-container').classed('selected', false); 
+            selectedLink = null; 
+        };
+        window.onclick = (e) => { 
+            if (e.target.classList.contains('modal') && 
+                !e.target.closest('#modal') && 
+                !e.target.closest('#taskTextPopup') &&
+                !e.target.closest('#templateModal') &&
+                !e.target.closest('#userGuideModal') &&
+                !e.target.closest('#shareModal') &&
+                !e.target.closest('#projectDescModal') &&
+                !e.target.closest('#colorLegendModal') &&
+                !e.target.closest('#connectorOptionsModal') 
+            ) {
+                e.target.style.display = 'none';
+            }
+        };
+
+        g('taskForm').onsubmit = (e) => { e.preventDefault(); if (selectedNode) { let tsks = []; g('taskTable').querySelectorAll('tbody tr').forEach((r) => { 
+            let chk = r.querySelector('input[type="checkbox"]'), 
+                txt = r.querySelector('.task-detail-textarea'); 
+            if (txt && txt.value.trim() !== '') tsks.push({ completed: chk.checked, task: txt.value.trim() }); 
+        }); Object.assign(selectedNode, { name: g('taskName').value, responsible: g('responsible').value, status: g('status').value, deadline: g('deadline').value, priority: g('priority').value, actionDescription: JSON.stringify(tsks), color: g('nodeColor').value || null, }); selectedNode.fx = selectedNode.x; selectedNode.fy = selectedNode.y; isInitialLayout = false; update(); } g('modal').style.display = 'none'; };
+        
+        g('confirmDeleteLinkBtn').onclick = () => { 
+            if (selectedLink && confirm('Are you sure you want to delete this connection?')) { 
+                data.links = data.links.filter(l => l !== selectedLink); 
+                isInitialLayout = false; 
+                update(); 
+            } 
+            g('connectorOptionsModal').style.display = 'none'; 
+            linkGroup.selectAll('g.link-container').classed('selected', false); 
+            selectedLink = null; 
+        };
+        
+        document.querySelectorAll('#connectorOptionsModal .line-style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (selectedLink) {
+                    selectedLink.lineStyle = this.dataset.style;
+                    updateButtonSelection(this, '#connectorOptionsModal .line-style-btn');
+                }
+            });
+        });
+
+        // MODIFIED: "Add/Remove Arrow" button click handler
+        g('addRemoveArrowBtn').addEventListener('click', function() {
+            if (selectedLink) {
+                if (selectedLink.arrowDirection === 'none') {
+                    selectedLink.arrowDirection = 'forward'; // Default to 'forward' when adding
+                } else {
+                    selectedLink.arrowDirection = 'none'; // Toggle off if already present
+                }
+                updateConnectorModalArrowButtons(); // Update UI for arrow buttons
+            }
+        });
+
+        g('switchArrowDirectionBtn').addEventListener('click', function() {
+            if (selectedLink && selectedLink.arrowDirection !== 'none') { 
+                selectedLink.arrowDirection = (selectedLink.arrowDirection === 'forward') ? 'backward' : 'forward';
+                updateConnectorModalArrowButtons(); 
+            }
+        });
+
+        g('saveConnectorOptionsBtn').onclick = (e) => {
+            e.preventDefault(); 
+            if (selectedLink) {
+                update(); 
+            }
+            g('connectorOptionsModal').style.display = 'none'; 
+            linkGroup.selectAll('g.link-container').classed('selected', false); 
+            selectedLink = null;
+        };
+
+
         g('addTaskRowBtn').addEventListener('click', () => addTaskRow({}));
         g('deleteTaskBtn').addEventListener('click', () => { let sR = g('taskTable').querySelector('tbody tr.selectedTaskRow'); if (sR) sR.remove(); g('taskTextPopup').style.display = 'none'; });
         g('deleteNodeBtn').addEventListener('click', () => { if (selectedNode && confirm('Delete node?')) { const selectedId = selectedNode.id; data.nodes = data.nodes.filter((n) => n.id !== selectedId); data.links = data.links.filter(l => (l.source.id || l.source) !== selectedId && (l.target.id || l.target) !== selectedId); selectedNode = null; isInitialLayout = false; update(); } g('modal').style.display = 'none'; });
         g('flowchartNameInput').addEventListener('input', function () { data.flowchartName = this.value || 'Untitled'; });
         
+        const originalAddConnectorClick = g('addConnectorBtn').onclick; 
+        g('addConnectorBtn').onclick = (e) => {
+            if (originalAddConnectorClick) originalAddConnectorClick(e); 
+
+            setTimeout(() => {
+                const newLink = data.links.find(l => 
+                    (l.source === (connectorStartNode ? connectorStartNode.id : undefined) && l.target === (selectedNode ? selectedNode.id : undefined)) ||
+                    (l.source === (selectedNode ? selectedNode.id : undefined) && l.target === (connectorStartNode ? connectorStartNode.id : undefined))
+                );
+                
+                if (newLink && (typeof newLink.lineStyle === 'undefined' || typeof newLink.arrowDirection === 'undefined')) {
+                    newLink.lineStyle = newLink.lineStyle || 'solid';
+                    newLink.arrowDirection = newLink.arrowDirection || 'none'; 
+                    update(); 
+                }
+            }, 0); 
+        };
+
         if (data.nodes.length === 0) {
             isInitialLayout = true;
             loadTemplate('prototype');
