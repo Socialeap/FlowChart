@@ -84,6 +84,17 @@
     #color-legend-display.visible { display: flex; }
     .legend-display-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-on-header); }
     .legend-display-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); }
+    /* New styles for line legend items */
+    .legend-display-line {
+        width: 30px;
+        height: 2px;
+        background-color: var(--text-on-header);
+        margin: 0 5px;
+    }
+    .legend-display-line.dotted {
+        border-bottom: 2px dotted var(--text-on-header);
+        background-color: transparent; /* Hide solid background if dotted */
+    }
     #flowchartContainer { width: calc(100% - 2rem); flex-grow: 1; border: 1px solid var(--flowchart-container-border); background: var(--flowchart-container-bg); overflow: hidden; position: relative; margin: 1rem; border-radius: 20px; box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1); }
     #flowchart { display: block; width: 100%; height: 100%; }
     line.link { cursor: pointer; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
@@ -317,6 +328,8 @@
       <button id="colorLegendBtn" data-tooltip-text="Color Legend"><i class="fas fa-palette"></i></button>
       <button id="templateBtn" data-tooltip-text="Load a Template"><i class="fas fa-file-alt"></i></button>
       <button id="projectDescBtn" style="display: none;" data-tooltip-text="Project Description"><i class="fas fa-info-circle"></i></button>
+      <!-- NEW: Add New Node button in the header -->
+      <button id="addNodeHeaderBtn" data-tooltip-text="Add New Node"><i class="fas fa-sitemap"></i></button>
       <button id="addConnectorBtn" data-tooltip-text="Add Connector"><i class="fas fa-link"></i></button>
       <button id="saveBtn" data-tooltip-text="Save Flowchart"><i class="fas fa-floppy-disk"></i></button>
       <button id="shareBtn" data-tooltip-text="Share"><i class="fas fa-share-alt"></i></button>
@@ -351,7 +364,7 @@
       <div class="color-swatch" data-color="#9b59b6"></div>
       <div class="color-swatch" data-color="#34495e"></div>
   </div>
-  <div class="action-buttons"><button type="submit" class="modal-btn">Save Node</button><button type="button" class="modal-btn" id="addNodeBtn">Add Child Node</button></div><div style="text-align: center; margin-top: 20px;"><button type="button" id="deleteNodeBtn" class="modal-btn danger">Delete Node</button></div></form></div></div>
+  <div class="action-buttons"><button type="submit" class="modal-btn">Save Node</button></div><div style="text-align: center; margin-top: 20px;"><button type="button" id="deleteNodeBtn" class="modal-btn danger">Delete Node</button></div></form></div></div>
   <div id="templateModal" class="modal"><div class="modal-content"><span class="close-button" id="closeTemplateModal">×</span><h2>Select Template</h2><div style="display: flex; flex-direction: column; gap: 1rem;"><button class="modal-btn" data-template="prototype">Prototype Development</button><button class="modal-btn" data-template="vendor">Vendor Outreach</button><button class="modal-btn" data-template="marketing">Marketing Campaign</button></div></div></div>
   <div id="taskTextPopup" class="modal"><div class="modal-content"><span class="close-button" id="closeTaskPopup">×</span><p id="taskFullText" style="white-space: pre-wrap; max-height: 60vh; overflow-y: auto;"></p><button id="deleteTaskBtn" class="modal-btn danger">Delete Task</button></div></div>
   <div id="userGuideModal" class="modal">
@@ -365,6 +378,7 @@
         <li><b>💾 Save</b> – Saving a FlowChart will always create a new file version each time.</li>
         <li><b>📄 Templates</b> – Start with a ready-made template 📄 (Prototype, Vendor, or Marketing).</li>
         <li><b>🎨 Color Legend</b> – Define what each color represents in your flowchart. The legend will appear below the header.</li>
+        <li><b>🆕 Add Node</b> – Add a new node to the canvas.</li>
         <li><b>+/- Node Size </b> – Resize task nodes for better visibility.</li>
         <li><b>🔗 Add Connector</b> - Click to enter 'Connector Mode,' then click two nodes to link them.</li>
         <li><b>⛓️‍💥 Delete a Connector</b> - Click directly on a connector line to bring up a confirmation to delete it.</li>
@@ -429,7 +443,7 @@
 
   <script>
     let selectedNode = null, selectedLink = null,
-      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {} },
+      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } }, // ADDED lineLegend default
       simulation, svg, nodeGroup, linkGroup, mainZoomGroup,
       isInitialLayout = true;
     const BASE_NODE_DIMENSION = 160;
@@ -444,8 +458,35 @@
       if (hex.length === 3) { r = parseInt(hex[0] + hex[0], 16); g = parseInt(hex[1] + hex[1], 16); b = parseInt(hex[2] + hex[2], 16); } 
       else if (hex.length === 6) { r = parseInt(hex.substring(0, 2), 16); g = parseInt(hex.substring(2, 4), 16); b = parseInt(hex.substring(4, 6), 16); } 
       else { return `rgba(128, 128, 128, ${alpha})`; }
-      if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(128,128,128,${alpha})`;
+      if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(${r},${g},${b},${alpha})`;
       return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    // New: Moved showColorSwatchTooltip and hideTooltip functions to global scope
+    function showColorSwatchTooltip(event) {
+        const tooltipElement = g('tooltip');
+        const swatch = event.currentTarget;
+        const color = swatch.dataset.color;
+        let tooltipText = '';
+
+        // Check if a description exists in the colorLegend
+        if (data.colorLegend && data.colorLegend[color]) {
+            tooltipText = data.colorLegend[color];
+        } else {
+            // Otherwise, display the RGB value
+            const rgb = hexToRgba(color, 1).replace('rgba(', 'RGB(').replace(',1)', ')');
+            tooltipText = `${rgb}`;
+        }
+        
+        tooltipElement.textContent = tooltipText;
+        const rect = swatch.getBoundingClientRect();
+        tooltipElement.style.top = `${rect.bottom + 8}px`;
+        tooltipElement.style.left = `${rect.left + rect.width / 2}px`;
+        tooltipElement.classList.add('visible');
+    }
+
+    function hideTooltip() {
+        g('tooltip').classList.remove('visible');
     }
 
     // Helper function to get safe positioning coordinates within the visible area
@@ -565,6 +606,8 @@
         })
         .on('end', function(event, d) {
             if (!event.active) simulation.alphaTarget(0);
+            d.fx = d.x; // Fix node position after drag
+            d.fy = d.y; // Fix node position after drag
             d3.select(this).classed('dragging', false);
         });
     
@@ -584,6 +627,14 @@
             const hasPositions = data.nodes.every(n => typeof n.x === 'number' && typeof n.y === 'number');
             
             if (!hasPositions) {
+                // If no initial positions, set them for a default layout
+                const safeArea = getSafePositioningArea();
+                data.nodes.forEach((d, i) => {
+                    d.x = safeArea.centerX + (i % 2 === 0 ? 1 : -1) * 150 * (Math.floor(i / 2) + 1);
+                    d.y = safeArea.centerY + (i % 3 - 1) * 100;
+                    d.fx = d.x;
+                    d.fy = d.y;
+                });
             } else {
                  data.nodes.forEach(d => {
                     d.fx = d.x;
@@ -831,6 +882,22 @@
     function saveToFile() { 
         try { 
             data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; 
+            // Save current viewbox transform
+            const currentTransform = mainZoomGroup.attr('transform');
+            data.viewboxTransform = currentTransform;
+
+            // Ensure lineStyle and arrowDirection are saved
+            const exportLinks = data.links.map(l => ({ 
+                source: l.source.id || l.source, 
+                target: l.target.id || l.target,
+                lineStyle: l.lineStyle || 'solid', 
+                arrowDirection: l.arrowDirection || 'none' 
+            }));
+
+            // Update generatedDate before saving
+            data.projectDescription = data.projectDescription || {};
+            data.projectDescription.generatedDate = new Date().toLocaleString();
+
             const expD = { 
                 flowchartName: data.flowchartName, 
                 projectDescription: data.projectDescription, 
@@ -839,13 +906,10 @@
                     deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, 
                     color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy 
                 })), 
-                links: data.links.map(l => ({ 
-                    source: l.source.id || l.source, 
-                    target: l.target.id || l.target,
-                    lineStyle: l.lineStyle || 'solid', 
-                    arrowDirection: l.arrowDirection || 'none' 
-                })), 
-                colorLegend: data.colorLegend 
+                links: exportLinks, 
+                colorLegend: data.colorLegend,
+                lineLegend: data.lineLegend, // Save line legend
+                viewboxTransform: data.viewboxTransform // Save viewbox transform
             }; 
             const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); 
         } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } 
@@ -862,15 +926,26 @@
                     g('flowchartNameInput').value = data.flowchartName || 'Untitled';
                     updateProjectDescButton();
                     g('fileNameDisplay').innerText = `Loaded: ${f.name}`;
-                    isInitialLayout = true;
+                    isInitialLayout = true; // Ensure layout re-initializes on load
                     data.nodes.forEach(d => {
                       d.fx = d.x;
                       d.fy = d.y;
                     });
+                    // Ensure lineStyle and arrowDirection properties are present for loaded links
                     data.links.forEach(l => {
                         l.lineStyle = l.lineStyle || 'solid';
                         l.arrowDirection = l.arrowDirection || 'none';
                     });
+                    // Ensure lineLegend is initialized for loaded files
+                    data.lineLegend = data.lineLegend || { "solid": "Standard Connection", "dotted": "Optional / Related Connection" };
+
+                    // Apply saved viewbox transform
+                    if (data.viewboxTransform && mainZoomGroup) {
+                        mainZoomGroup.attr('transform', data.viewboxTransform);
+                        const zoomBehavior = d3.zoom().transform;
+                        svg.call(d3.zoom().transform, d3.zoomIdentity.fromString(data.viewboxTransform));
+                    }
+
                     update();
                 } else {
                     alert('Invalid file format.');
@@ -890,6 +965,7 @@
         data.links = []; 
         data.projectDescription = { summary: '', generatedDate: '' }; 
         data.colorLegend = {}; 
+        data.lineLegend = { "solid": "Standard Connection", "dotted": "Optional / Related Connection" }; // Reset line legend
         updateProjectDescButton(); 
         
         const vB = svg.attr('viewBox').split(' ');
@@ -1063,24 +1139,140 @@
         }
     }
 
-    function openColorLegendModal() { const container = g('color-legend-entries'); container.innerHTML = ''; const uniqueColors = [...new Set(data.nodes.map(n => n.color).filter(c => c))]; const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); uniqueColors.forEach(color => { const entry = document.createElement('div'); entry.className = 'legend-entry'; const swatch = document.createElement('div'); swatch.className = 'legend-color-swatch'; swatch.style.backgroundColor = hexToRgba(color, opacity); const input = document.createElement('input'); input.type = 'text'; input.placeholder = `Description for ${color}`; input.dataset.color = color; input.value = data.colorLegend[color] || ''; entry.appendChild(swatch); entry.appendChild(input); container.appendChild(entry); }); g('colorLegendModal').style.display = 'block'; }
-    function saveColorLegend(event) { event.preventDefault(); document.querySelectorAll('#color-legend-entries input').forEach(input => { const color = input.dataset.color, desc = input.value.trim(); if (desc) data.colorLegend[color] = desc; else delete data.colorLegend[color]; }); g('colorLegendModal').style.display = 'none'; updateLegendDisplay(); }
-    function updateLegendDisplay() { const container = g('color-legend-display'); container.innerHTML = ''; const items = Object.entries(data.colorLegend); const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); if (items.length > 0) { items.forEach(([color, description]) => { const item = document.createElement('div'); item.className = 'legend-display-item'; const swatch = document.createElement('div'); swatch.className = 'legend-display-color'; swatch.style.backgroundColor = hexToRgba(color, opacity); const text = document.createElement('span'); text.textContent = description; item.appendChild(swatch); item.appendChild(text); container.appendChild(item); }); container.classList.add('visible'); } else { container.classList.remove('visible'); } }
-    function createNode(pN) { 
+    function openColorLegendModal() { 
+      const container = g('color-legend-entries'); 
+      container.innerHTML = ''; 
+      const uniqueColors = [...new Set(data.nodes.map(n => n.color).filter(c => c))]; 
+      const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); 
+      
+      uniqueColors.forEach(color => { 
+        const entry = document.createElement('div'); 
+        entry.className = 'legend-entry'; 
+        const swatch = document.createElement('div'); 
+        swatch.className = 'legend-color-swatch'; 
+        swatch.style.backgroundColor = hexToRgba(color, opacity); 
+        const input = document.createElement('input'); 
+        input.type = 'text'; 
+        input.placeholder = `Description for ${color}`; 
+        input.dataset.color = color; 
+        input.value = data.colorLegend[color] || ''; 
+        entry.appendChild(swatch); 
+        entry.appendChild(input); 
+        container.appendChild(entry); 
+      }); 
+
+      // Populate line legend input fields
+      // Ensure lineLegend object exists before accessing its properties
+      data.lineLegend = data.lineLegend || {}; 
+      
+      const lineLegendSection = document.createElement('div');
+      lineLegendSection.innerHTML = `<h3>Connector Line Types</h3>
+                                      <div class="legend-entry">
+                                          <span class="legend-display-line"></span>
+                                          <input type="text" id="solidLineDesc" placeholder="Description for Solid Lines" value="${data.lineLegend.solid || 'Standard Connection'}"/>
+                                      </div>
+                                      <div class="legend-entry">
+                                          <span class="legend-display-line dotted"></span>
+                                          <input type="text" id="dottedLineDesc" placeholder="Description for Dotted Lines" value="${data.lineLegend.dotted || 'Optional / Related Connection'}"/>
+                                      </div>`;
+      container.appendChild(lineLegendSection);
+
+      g('colorLegendModal').style.display = 'block'; 
+    }
+
+    function saveColorLegend(event) { 
+      event.preventDefault(); 
+      document.querySelectorAll('#color-legend-entries input').forEach(input => { 
+        const color = input.dataset.color, desc = input.value.trim(); 
+        if (desc) data.colorLegend[color] = desc; 
+        else delete data.colorLegend[color]; 
+      }); 
+
+      // Save line legend descriptions
+      data.lineLegend = data.lineLegend || {}; 
+      const solidDesc = g('solidLineDesc').value.trim();
+      const dottedDesc = g('dottedLineDesc').value.trim();
+      if (solidDesc) data.lineLegend.solid = solidDesc; else delete data.lineLegend.solid;
+      if (dottedDesc) data.lineLegend.dotted = dottedDesc; else delete data.lineLegend.dotted;
+
+      g('colorLegendModal').style.display = 'none'; 
+      updateLegendDisplay(); 
+    }
+
+    function updateLegendDisplay() { 
+      const container = g('color-legend-display'); 
+      container.innerHTML = ''; 
+      const colorItems = Object.entries(data.colorLegend); 
+      const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); 
+      
+      let hasContent = false;
+
+      // Add color legend items
+      if (colorItems.length > 0) { 
+        colorItems.forEach(([color, description]) => { 
+          const item = document.createElement('div'); 
+          item.className = 'legend-display-item'; 
+          const swatch = document.createElement('div'); 
+          swatch.className = 'legend-display-color'; 
+          swatch.style.backgroundColor = hexToRgba(color, opacity); 
+          const text = document.createElement('span'); 
+          text.textContent = description; 
+          item.appendChild(swatch); 
+          item.appendChild(text); 
+          container.appendChild(item); 
+        }); 
+        hasContent = true;
+      } 
+
+      // Add line legend items only if descriptions are provided
+      if (data.lineLegend) {
+          const solidDesc = data.lineLegend.solid;
+          const dottedDesc = data.lineLegend.dotted;
+
+          if (solidDesc) {
+              const item = document.createElement('div');
+              item.className = 'legend-display-item';
+              const lineDiv = document.createElement('span');
+              lineDiv.className = 'legend-display-line';
+              const text = document.createElement('span');
+              text.textContent = solidDesc;
+              item.appendChild(lineDiv);
+              item.appendChild(text);
+              container.appendChild(item);
+              hasContent = true;
+          }
+          if (dottedDesc) {
+              const item = document.createElement('div');
+              item.className = 'legend-display-item';
+              const lineDiv = document.createElement('span');
+              lineDiv.className = 'legend-display-line dotted';
+              const text = document.createElement('span');
+              text.textContent = dottedDesc;
+              item.appendChild(lineDiv);
+              item.appendChild(text);
+              container.appendChild(item);
+              hasContent = true;
+          }
+      }
+
+      if (hasContent) {
+          container.classList.add('visible'); 
+      } else { 
+          container.classList.remove('visible'); 
+      } 
+    }
+
+    function createNode() { // Removed pN parameter as it's no longer used for positioning
         const nId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
         const cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor;
         let iX, iY;
 
-        if (pN && typeof pN.x === 'number' && typeof pN.y === 'number') {
-            iX = pN.x + (Math.random() * 100 - 50);
-            iY = pN.y + cSD * 1.2; 
-        } else {
-            const safeArea = getSafePositioningArea();
-            iX = safeArea.centerX + (Math.random() * 200 - 100);
-            iY = safeArea.centerY + (Math.random() * 100 - 50);
-        }
-
+        // Position new node in a general safe area
         const safeArea = getSafePositioningArea();
+        iX = safeArea.centerX + (Math.random() * 200 - 100); 
+        iY = safeArea.centerY + (Math.random() * 100 - 50);  
+        
+        // Clamp new node position to safe area
         iX = Math.max(safeArea.left + cSD / 2, Math.min(iX, safeArea.right - cSD / 2));
         iY = Math.max(safeArea.top + cSD / 2, Math.min(iY, safeArea.bottom - cSD / 2));
 
@@ -1102,7 +1294,7 @@
         data.nodes.push(nN); 
         isInitialLayout = false; 
         update(); 
-        return nN; 
+        // No need to return nN or call nodeClick here as node creation is a standalone action.
     }
     function updateNodeSizes() { if (!simulation) return; const sD = BASE_NODE_DIMENSION * currentNodeSizeFactor; simulation.force('collide').radius((sD * 0.55) + 25); simulation.force('charge').strength(-1800 * (sD / 160)); isInitialLayout = false; update(); }
     
@@ -1121,9 +1313,23 @@
     function initializeApp() {
         initD3();
         
+        // Populate flowchart name if already set, otherwise default
+        g('flowchartNameInput').value = data.flowchartName || 'Untitled Flowchart';
+        updateProjectDescButton();
+
         const tooltip = g('tooltip');
-        if (tooltip) { document.querySelectorAll('nav button[data-tooltip-text]').forEach(button => { button.addEventListener('mouseenter', () => { tooltip.textContent = button.dataset.tooltipText; const rect = button.getBoundingClientRect(); tooltip.style.top = `${rect.bottom + 8}px`; tooltip.style.left = `${rect.left + rect.width / 2}px`; tooltip.classList.add('visible'); }); button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); }); }
+        if (tooltip) { document.querySelectorAll('nav button[data-tooltip-text]').forEach(button => { 
+            button.addEventListener('mouseenter', () => { 
+                tooltip.textContent = button.dataset.tooltipText; 
+                const rect = button.getBoundingClientRect(); 
+                tooltip.style.top = `${rect.bottom + 8}px`; 
+                tooltip.style.left = `${rect.left + rect.width / 2}px`; 
+                tooltip.classList.add('visible'); 
+            }); 
+            button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); 
+        }); }
         
+        // Attach event listeners for color swatches, now that functions are defined globally
         document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { 
             const color = swatch.dataset.color;
             const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55');
@@ -1132,14 +1338,13 @@
             } else {
                 console.warn('Color swatch missing data-color attribute:', swatch); 
             }
-        });
-
-        document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => {
             swatch.addEventListener('click', function() {
                 document.querySelectorAll('.color-panel .color-swatch').forEach(s => s.classList.remove('selected-swatch'));
                 this.classList.add('selected-swatch');
                 g('nodeColor').value = this.dataset.color;
             });
+            swatch.addEventListener('mouseenter', showColorSwatchTooltip); // Now 'showColorSwatchTooltip' is defined
+            swatch.addEventListener('mouseleave', hideTooltip);           // Now 'hideTooltip' is defined
         });
 
 
@@ -1156,6 +1361,13 @@
         g('colorLegendForm').onsubmit = saveColorLegend;
         g('templateBtn').onclick = () => { g('templateModal').style.display = 'block'; };
         document.querySelectorAll('#templateModal .modal-btn').forEach((b) => (b.onclick = (e) => { loadTemplate(e.target.dataset.template); g('templateModal').style.display = 'none'; }));
+        
+        // NEW: Add New Node button handler
+        g('addNodeHeaderBtn').onclick = (e) => { 
+            e.preventDefault(); 
+            createNode(); // Call createNode without a parent, as it's a standalone "Add New Node"
+        };
+
         const addConnBtn = g('addConnectorBtn');
         addConnBtn.addEventListener('click', () => { 
             connectorMode = !connectorMode; 
@@ -1166,15 +1378,12 @@
                 nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
             }
         });
-        g('addNodeBtn').onclick = (e) => { e.preventDefault(); const nN = createNode(selectedNode); if (nN) { selectedNode = nN; nodeClick({ stopPropagation: () => {}, defaultPrevented: false }, nN); } };
+        // REMOVED: The 'Add Child Node' button from the modal.
+        // g('addNodeBtn').onclick = (e) => { e.preventDefault(); const nN = createNode(selectedNode); if (nN) { selectedNode = nN; nodeClick({ stopPropagation: () => {}, defaultPrevented: false }, nN); } };
         
         g('saveBtn').onclick = saveToFile;
         
-        g('uploadBtn').onclick = () => { 
-            g('fileInput').click(); 
-            // NEW: Clear the file input value after a click to ensure onchange fires even if same file is selected
-            g('fileInput').value = '';
-        };
+        g('uploadBtn').onclick = () => g('fileInput').click();
         g('fileInput').onchange = (e) => { if (e.target.files.length > 0) loadFromFile(e.target.files[0]); };
         g('userGuideBtn').onclick = () => { g('userGuideModal').style.display = 'block'; };
         g('closeUserGuideModal').onclick = () => g('userGuideModal').style.display = 'none';
@@ -1260,26 +1469,6 @@
                 updateConnectorModalArrowButtons(); 
             }
         });
-
-        // MODIFIED: updateConnectorModalArrowButtons to change text and icon
-        function updateConnectorModalArrowButtons() {
-            const addRemoveArrowBtn = g('addRemoveArrowBtn');
-            const addRemoveArrowIcon = g('addRemoveArrowIcon');
-            const addRemoveArrowText = g('addRemoveArrowText');
-            const switchArrowDirectionBtn = g('switchArrowDirectionBtn');
-
-            if (selectedLink.arrowDirection === 'none') {
-                addRemoveArrowBtn.classList.remove('selected');
-                addRemoveArrowIcon.className = 'fas fa-plus-circle';
-                addRemoveArrowText.textContent = 'Add Arrow';
-                switchArrowDirectionBtn.classList.add('disabled');
-            } else {
-                addRemoveArrowBtn.classList.add('selected');
-                addRemoveArrowIcon.className = 'fas fa-minus-circle';
-                addRemoveArrowText.textContent = 'Remove Arrow';
-                switchArrowDirectionBtn.classList.remove('disabled');
-            }
-        }
 
         g('saveConnectorOptionsBtn').onclick = (e) => {
             e.preventDefault(); 
