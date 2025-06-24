@@ -4,6 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowChart Manager</title>
+  <!-- Embed Lock: Verify correct Wix page via document.referrer -->
+<script>
+  (function() {
+    const ref = document.referrer || '';
+    const proHost = 'https://www.socialeap.net/flowchart-manager';
+    if (!ref.startsWith(proHost)) {
+      document.documentElement.innerHTML =
+        '<body style="margin:0;padding:2rem;font:16px/1.4 sans-serif;background:#20232a;color:#eee;display:flex;align-items:center;justify-content:center;">' +
+        '⚠️ FlowChart Manager is locked to private pages on socialeap.net.' +
+        '</body>';
+      throw new Error('Embed validation failed');
+    }
+  })();
+</script>
 
   <link
     rel="icon"
