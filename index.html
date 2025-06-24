@@ -84,7 +84,6 @@
     #color-legend-display.visible { display: flex; }
     .legend-display-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-on-header); }
     .legend-display-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); }
-    /* New styles for line legend items */
     .legend-display-line {
         width: 30px;
         height: 2px;
@@ -93,17 +92,14 @@
     }
     .legend-display-line.dotted {
         border-bottom: 2px dotted var(--text-on-header);
-        background-color: transparent; /* Hide solid background if dotted */
+        background-color: transparent; 
     }
     #flowchartContainer { width: calc(100% - 2rem); flex-grow: 1; border: 1px solid var(--flowchart-container-border); background: var(--flowchart-container-bg); overflow: hidden; position: relative; margin: 1rem; border-radius: 20px; box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1); }
     #flowchart { display: block; width: 100%; height: 100%; }
     line.link { cursor: pointer; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
     line.link.selected { stroke: var(--link-selected-color) !important; stroke-width: 4px; stroke-dasharray: 5, 5; }
-    #banner-container { position: absolute; top: 10px; left: 10px; width: 35%; max-width: 420px; aspect-ratio: 1500 / 625; border-radius: 12px; overflow: hidden; background: transparent; z-index: 50; }
-    #banner-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding-top: 50px; overflow-y: auto; }
     .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); color: var(--modal-text); margin: 20px auto; padding: 2rem; width: 90%; max-width: 750px; overflow-y: auto; max-height: calc(100vh - 100px); border-radius: 20px; position: relative; box-shadow: var(--modal-strong-shadow); transition: background 0.3s ease, border-color 0.3s ease; }
-    /* MODIFIED: Adjusted max-width for the new connector options modal */
     #connectorOptionsModal .modal-content, #colorLegendModal .modal-content { max-width: 500px; }
     #color-legend-entries { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
     .legend-entry { display: flex; align-items: center; gap: 1rem; }
@@ -134,7 +130,6 @@
     .modal-content li, #userGuideModal .modal-content li { margin-bottom: 0.7em; line-height: 1.6; }
     #userGuideModal .modal-content li strong { font-weight: 600; color: var(--modal-text); }
     .modal-content p, #userGuideModal .modal-content p { margin-bottom: 1em; line-height: 1.6; }
-    /* Styling for the task text and new view icon */
     #taskTextPopup #taskFullText a {
         color: var(--link-color);
         text-decoration: underline;
@@ -149,53 +144,41 @@
         margin-left: 0.5em;
         font-weight: normal;
     }
-    
-    /* MODIFIED: Styles for the task row in the table */
-    #taskTable tbody tr td.task-cell-content { /* Target the specific td for flex */
-        display: flex; /* Make the td a flex container */
-        align-items: flex-end; /* Align items to the bottom, useful for multiline textareas */
-        gap: 8px; /* Space between textarea and icon */
-        /* Removed position: relative; here as it's not strictly necessary for flex positioning */
+    #taskTable tbody tr td.task-cell-content { 
+        display: flex; 
+        align-items: flex-end; 
+        gap: 8px; 
     }
-
     #taskTable tbody tr .task-detail-textarea {
-        flex-grow: 1; /* Textarea takes up most of the space */
-        min-height: 38px; /* Ensure a consistent base height */
-        overflow: hidden; /* Hide scrollbar */
-        resize: none; /* Prevent manual resizing by user to ensure auto-height works */
-        border-radius: 12px; /* Ensure all corners are rounded */
-        box-sizing: border-box; /* Include padding/border in element's total width and height */
-        padding-right: 12px; /* Ensure sufficient internal padding */
+        flex-grow: 1;
+        min-height: 38px;
+        overflow: hidden;
+        resize: none;
+        border-radius: 12px;
+        box-sizing: border-box;
+        padding-right: 12px;
     }
-
     .task-view-icon {
-        flex-shrink: 0; /* Prevent icon from shrinking */
+        flex-shrink: 0;
         font-size: 1.1em;
-        color: var(--close-button-color); /* Use a subtle color */
+        color: var(--close-button-color);
         cursor: pointer;
         transition: color 0.2s ease, transform 0.2s ease;
-        padding: 5px; /* Make it easier to click */
-        border-radius: 50%; /* Make it look like a button */
-        margin-bottom: 3px; /* slight adjustment to align with textarea base */
+        padding: 5px;
+        border-radius: 50%;
+        margin-bottom: 3px;
     }
     .task-view-icon:hover {
         color: var(--close-button-hover-color);
-        transform: scale(1.1); /* No translateY needed if not absolutely positioned */
+        transform: scale(1.1);
         background: rgba(255, 255, 255, 0.1);
     }
-    /* Adjust task table header for the new icon column if desired, or let it implicitly align */
-    #taskTable thead th:last-child {
-        /* If you wanted a header for the icon, you'd add another <th> */
-        /* For now, just ensure 'Task' column has enough width */
-    }
-
-    /* NEW CSS for color panel visibility and layout */
     .color-panel {
-        display: flex; /* Makes it a flex container */
-        flex-wrap: wrap; /* Allows swatches to wrap to the next line if needed */
-        gap: 10px; /* Adds space between color swatches */
-        justify-content: center; /* Centers the swatches horizontally */
-        margin-top: 5px; /* Add a little space above the panel */
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 5px;
     }
     .color-swatch {
         width: 32px;
@@ -204,18 +187,16 @@
         border: 2px solid var(--glass-border);
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        flex-shrink: 0; /* Prevent swatches from shrinking */
+        flex-shrink: 0;
     }
     .color-swatch.selected-swatch {
         transform: scale(1.1);
-        box-shadow: 0 0 0 3px var(--modal-text); /* Highlight selected swatch */
+        box-shadow: 0 0 0 3px var(--modal-text);
     }
     .color-swatch:hover {
         transform: scale(1.05);
         box-shadow: 0 0 0 2px var(--modal-text);
     }
-
-    /* NEW: Styles for Connector Options Modal */
     #connectorOptionsModal .modal-content h2 {
         text-align: center;
     }
@@ -226,12 +207,11 @@
         font-weight: 600;
         color: var(--modal-text);
     }
-    /* MODIFIED: Layout for the arrow controls */
-    .arrow-controls-group { /* New container for Add and Switch buttons */
+    .arrow-controls-group {
         display: flex;
         gap: 10px;
         justify-content: center;
-        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        flex-wrap: wrap;
     }
     .style-options {
         display: flex;
@@ -240,7 +220,7 @@
         justify-content: center;
         margin-bottom: 1rem;
     }
-    .line-style-btn, .arrow-control-btn { /* Combined class for new arrow buttons */
+    .line-style-btn, .arrow-control-btn {
         background: rgba(255, 255, 255, 0.15);
         border: 1px solid rgba(255, 255, 255, 0.2);
         color: var(--modal-text);
@@ -253,33 +233,29 @@
         align-items: center;
         justify-content: center;
         gap: 5px;
-        flex: 1; /* Allows buttons to grow and fill available space evenly */
-        min-width: 90px; /* Ensure consistent minimum button size */
+        flex: 1;
+        min-width: 90px;
     }
-    .line-style-btn i, .arrow-control-btn i { /* Combined icon styling */
+    .line-style-btn i, .arrow-control-btn i {
         font-size: 1.1em;
     }
-    /* Styles for selected/active state */
     .line-style-btn.selected, .arrow-control-btn.selected {
         background: var(--button-hover-bg); 
         border-color: var(--link-selected-color); 
         box-shadow: 0 0 0 2px var(--link-selected-color);
         color: var(--text-on-header); 
     }
-    /* Hover effects for non-selected buttons */
     .line-style-btn:hover:not(.selected), .arrow-control-btn:hover:not(.selected) {
         background: rgba(255, 255, 255, 0.25);
         transform: translateY(-1px);
     }
-    /* Styling for disabled buttons */
     .arrow-control-btn.disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        pointer-events: none; /* Prevent clicks */
-        transform: translateY(0) !important; /* Override hover transform */
-        box-shadow: none !important; /* Override hover shadow */
+        pointer-events: none;
+        transform: translateY(0) !important;
+        box-shadow: none !important;
     }
-
     .link-options-action-buttons {
         display: flex;
         justify-content: space-between;
@@ -289,35 +265,52 @@
     .link-options-action-buttons .modal-btn {
         flex: 1; 
     }
-
-    /* Styles for D3.js SVG Arrows */
     .link-arrow {
-        pointer-events: none; /* Do not block clicks on the line */
-        fill: var(--link-color); /* Arrow color defaults to link color */
+        pointer-events: none;
+        fill: var(--link-color);
         transition: fill 0.3s ease;
     }
-    .link.selected + .link-arrow { /* If link is selected, change arrow color */
+    .link.selected + .link-arrow {
         fill: var(--link-selected-color) !important;
     }
-    /* NEW: Styles for the wider transparent hit area line */
     line.link-hit-area {
         stroke: transparent;
-        stroke-width: 15px; /* Make this much wider than the visible line */
-        cursor: pointer; /* Ensure it still shows pointer cursor */
-        pointer-events: stroke; /* Only respond to clicks on the stroke itself */
+        stroke-width: 15px;
+        cursor: pointer;
+        pointer-events: stroke;
     }
-    /* Ensure the visible line doesn't capture clicks */
     line.link-visible {
-        pointer-events: none; /* Let clicks pass through to the hit area */
+        pointer-events: none;
     }
   </style>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
 </head>
 
 <body>
+  <script>
+    (function() {
+      // This self-executing function runs immediately to validate the embed context.
+      const expectedToken = 'PRO12345'; // Hard-coded token for the Pro version
+      const expectedReferrer = 'https://www.socialeap.net';
+      
+      const params = new URLSearchParams(window.location.search);
+      const receivedToken = params.get('wixSig');
+      const referrer = document.referrer;
+
+      const isReferrerValid = referrer && referrer.startsWith(expectedReferrer);
+      const isTokenValid = receivedToken === expectedToken;
+
+      // If either check fails, halt the app and show the lock screen.
+      if (!isReferrerValid || !isTokenValid) {
+        document.body.innerHTML = `
+          <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; font-size:1.2rem; background-color:#20232a; color:white; text-align:center; padding: 20px;">
+            ⚠️ FlowChart Manager is locked to private pages on socialeap.net.
+          </div>`;
+        // This error will stop any subsequent scripts from running.
+        throw new Error('Embed validation failed. Referrer: ' + referrer + ', Token: ' + receivedToken);
+      }
+    })();
+  </script>
+
   <header>
     <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
     <nav>
@@ -328,7 +321,6 @@
       <button id="colorLegendBtn" data-tooltip-text="Color Legend"><i class="fas fa-palette"></i></button>
       <button id="templateBtn" data-tooltip-text="Load a Template"><i class="fas fa-file-alt"></i></button>
       <button id="projectDescBtn" style="display: none;" data-tooltip-text="Project Description"><i class="fas fa-info-circle"></i></button>
-      <!-- NEW: Add New Node button in the header -->
       <button id="addNodeHeaderBtn" data-tooltip-text="Add New Node"><i class="fas fa-sitemap"></i></button>
       <button id="addConnectorBtn" data-tooltip-text="Add Connector"><i class="fas fa-link"></i></button>
       <button id="saveBtn" data-tooltip-text="Save Flowchart"><i class="fas fa-floppy-disk"></i></button>
@@ -348,7 +340,6 @@
         <polygon id="central-arrow-shape" points="0,-20 40,0 0,20" /> 
       </defs>
     </svg>
-    <div id="banner-container"><iframe src="https://transcendence.media/SmartWealth-Banner" allowtransparency="true" scrolling="no" frameborder="0"></iframe></div>
   </div>
 
   <div id="modal" class="modal"><div class="modal-content"><span class="close-button" id="closeModal">×</span><h2>Task Details</h2><form id="taskForm"><label>Task Name: <textarea id="taskName" required></textarea></label><label>Responsible: <input type="text" id="responsible" /></label><label>Status:<select id="status"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></label><label>Deadline: <input type="date" id="deadline" /></label><label>Priority:<select id="priority"><option value="Low">Low</option><option value="Normal">Normal</option><option value="High">High</option></select></label>
@@ -436,14 +427,18 @@
         </form>
     </div>
   </div>
-  <div id="shareModal" class="modal"><div class="modal-content"><span class="close-button" id="closeShareModal">×</span><h2>Share Flowchart</h2><iframe src="https://view.genially.com/6845a98ee4504c754b83f421" allowfullscreen="true" scrolling="no" frameborder="0"></iframe></div></div>
+  <div id="shareModal" class="modal"><div class="modal-content"><span class="close-button" id="closeShareModal">×</span><h2>Share Flowchart</h2><p style="text-align: center; padding: 2rem 0;">Share your flowchart with a public link! This feature is coming soon.</p></div></div>
   <div id="projectDescModal" class="modal"><div class="modal-content"><span class="close-button" id="closeProjectDescModal">×</span><h2>Project Description</h2><p id="projectSummary"></p><p id="projectGeneratedDate"></p></div></div>
   <div id="colorLegendModal" class="modal"><div class="modal-content"><span class="close-button" id="closeColorLegendModal">×</span><h2>Edit Color Legend</h2><form id="colorLegendForm"><p>Define what each color represents. These will be shown in a legend below the header.</p><div id="color-legend-entries"></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Legend</button></div></form></div></div>
   <div id="tooltip"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
+
   <script>
     let selectedNode = null, selectedLink = null,
-      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } }, // ADDED lineLegend default
+      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } },
       simulation, svg, nodeGroup, linkGroup, mainZoomGroup,
       isInitialLayout = true;
     const BASE_NODE_DIMENSION = 160;
@@ -462,18 +457,15 @@
       return `rgba(${r},${g},${b},${alpha})`;
     }
 
-    // New: Moved showColorSwatchTooltip and hideTooltip functions to global scope
     function showColorSwatchTooltip(event) {
         const tooltipElement = g('tooltip');
         const swatch = event.currentTarget;
         const color = swatch.dataset.color;
         let tooltipText = '';
 
-        // Check if a description exists in the colorLegend
         if (data.colorLegend && data.colorLegend[color]) {
             tooltipText = data.colorLegend[color];
         } else {
-            // Otherwise, display the RGB value
             const rgb = hexToRgba(color, 1).replace('rgba(', 'RGB(').replace(',1)', ')');
             tooltipText = `${rgb}`;
         }
@@ -489,7 +481,6 @@
         g('tooltip').classList.remove('visible');
     }
 
-    // Helper function to get safe positioning coordinates within the visible area
     function getSafePositioningArea() {
         const fcCont = g('flowchartContainer');
         const containerWidth = fcCont.clientWidth;
@@ -558,13 +549,12 @@
         nodeGroup.selectAll('g.node-group')
             .attr('transform', d => `translate(${d.x},${d.y})`);
         
-        // MODIFIED: Update both the hit area line and the visible line
         linkGroup.selectAll('.link-container').each(function(d) {
             if (d.source && d.target) {
                 const sourcePoint = getIntersectionPoint(d.source, d.target, currentScaledDimension, currentScaledDimension);
                 const targetPoint = getIntersectionPoint(d.target, d.source, currentScaledDimension, currentScaledDimension);
                 
-                d3.select(this).selectAll('line') // Select both lines within the container
+                d3.select(this).selectAll('line') 
                     .attr('x1', sourcePoint.x)
                     .attr('y1', sourcePoint.y)
                     .attr('x2', targetPoint.x)
@@ -572,7 +562,6 @@
             }
         });
 
-        // Update position and rotation of arrows
         mainZoomGroup.selectAll('g.link-arrow').each(function(d) {
             if (!d.source || !d.target) return; 
 
@@ -606,8 +595,8 @@
         })
         .on('end', function(event, d) {
             if (!event.active) simulation.alphaTarget(0);
-            d.fx = d.x; // Fix node position after drag
-            d.fy = d.y; // Fix node position after drag
+            d.fx = d.x; 
+            d.fy = d.y; 
             d3.select(this).classed('dragging', false);
         });
     
@@ -627,7 +616,6 @@
             const hasPositions = data.nodes.every(n => typeof n.x === 'number' && typeof n.y === 'number');
             
             if (!hasPositions) {
-                // If no initial positions, set them for a default layout
                 const safeArea = getSafePositioningArea();
                 data.nodes.forEach((d, i) => {
                     d.x = safeArea.centerX + (i % 2 === 0 ? 1 : -1) * 150 * (Math.floor(i / 2) + 1);
@@ -644,7 +632,6 @@
             isInitialLayout = false;
         }
 
-        // NEW: Create a container group for each link that will hold both the hit area and the visible line
         let linkContainer = linkGroup.selectAll('g.link-container')
             .data(data.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`);
 
@@ -653,12 +640,10 @@
         let linkContainerEnter = linkContainer.enter().append('g')
             .attr('class', 'link-container');
         
-        // Append the hit area line first (so it's behind the visible line visually)
         linkContainerEnter.append('line')
             .attr('class', 'link-hit-area')
-            .on('click', linkClickHandler); // Attach handler to hit area
+            .on('click', linkClickHandler); 
 
-        // Append the visible line
         linkContainerEnter.append('line')
             .attr('class', 'link-visible')
             .attr('stroke', 'var(--link-color)')
@@ -666,15 +651,11 @@
 
         linkContainer = linkContainerEnter.merge(linkContainer);
 
-        // Apply selected class to the container, which CSS will use to style the visible line
         linkContainer.classed('selected', d => d === selectedLink);
         
-        // Update the visible line's dash array
         linkContainer.select('line.link-visible')
             .attr('stroke-dasharray', d => d.lineStyle === 'dotted' ? '5,5' : 'none');
 
-        // D3 selection for arrows
-        // Filter explicitly for 'forward' or 'backward' for arrow display
         let arrows = mainZoomGroup.selectAll('g.link-arrow')
             .data(data.links.filter(d => d.arrowDirection === 'forward' || d.arrowDirection === 'backward'), d => d.id);
 
@@ -687,7 +668,6 @@
 
         arrows = arrowsEnter.merge(arrows); 
 
-        // Update styling for arrows (e.g., color)
         arrows.select('use').attr('fill', 'var(--link-color)'); 
 
         let node = nodeGroup.selectAll('g.node-group').data(data.nodes, d => d.id);
@@ -838,10 +818,6 @@
         viewIcon.addEventListener('click', function(e) {
             e.stopPropagation(); 
             tr.classList.add('selectedTaskRow'); 
-            
-            console.log('Eye icon clicked!');
-            console.log('Attempting to show popup with text:', ti.value);
-
             showTaskPopup(ti.value); 
         });
 
@@ -857,8 +833,6 @@
     function populateTaskTable(str) { const tb = g('taskTable').querySelector('tbody'); tb.innerHTML = ''; let arr = []; try { arr = JSON.parse(str); if (!Array.isArray(arr)) arr = str.trim() ? [{ completed: false, task: str }] : []; } catch (e) { arr = str.trim() ? [{ completed: false, task: str }] : []; } if (Array.isArray(str)) arr = str; if (arr.length > 0) arr.forEach((t) => addTaskRow(t)); else addTaskRow({}); }
     
     function showTaskPopup(txt) {
-        console.log('showTaskPopup called with:', txt);
-
         const linkedHtml = linkifyHtml(txt, {
             target: '_blank',           
             rel: 'noopener noreferrer'  
@@ -870,7 +844,6 @@
         if (taskFullTextElement && taskTextPopupModal) {
             taskFullTextElement.innerHTML = linkedHtml; 
             taskTextPopupModal.style.display = 'block'; 
-            console.log('taskTextPopup and taskFullText elements found. Modal display set to block.');
         } else {
             console.error('Error: Could not find taskFullText or taskTextPopup elements. Please check your HTML IDs.');
         }
@@ -882,11 +855,9 @@
     function saveToFile() { 
         try { 
             data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; 
-            // Save current viewbox transform
             const currentTransform = mainZoomGroup.attr('transform');
             data.viewboxTransform = currentTransform;
 
-            // Ensure lineStyle and arrowDirection are saved
             const exportLinks = data.links.map(l => ({ 
                 source: l.source.id || l.source, 
                 target: l.target.id || l.target,
@@ -894,7 +865,6 @@
                 arrowDirection: l.arrowDirection || 'none' 
             }));
 
-            // Update generatedDate before saving
             data.projectDescription = data.projectDescription || {};
             data.projectDescription.generatedDate = new Date().toLocaleString();
 
@@ -908,8 +878,8 @@
                 })), 
                 links: exportLinks, 
                 colorLegend: data.colorLegend,
-                lineLegend: data.lineLegend, // Save line legend
-                viewboxTransform: data.viewboxTransform // Save viewbox transform
+                lineLegend: data.lineLegend, 
+                viewboxTransform: data.viewboxTransform 
             }; 
             const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); 
         } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } 
@@ -926,23 +896,19 @@
                     g('flowchartNameInput').value = data.flowchartName || 'Untitled';
                     updateProjectDescButton();
                     g('fileNameDisplay').innerText = `Loaded: ${f.name}`;
-                    isInitialLayout = true; // Ensure layout re-initializes on load
+                    isInitialLayout = true; 
                     data.nodes.forEach(d => {
                       d.fx = d.x;
                       d.fy = d.y;
                     });
-                    // Ensure lineStyle and arrowDirection properties are present for loaded links
                     data.links.forEach(l => {
                         l.lineStyle = l.lineStyle || 'solid';
                         l.arrowDirection = l.arrowDirection || 'none';
                     });
-                    // Ensure lineLegend is initialized for loaded files
                     data.lineLegend = data.lineLegend || { "solid": "Standard Connection", "dotted": "Optional / Related Connection" };
 
-                    // Apply saved viewbox transform
                     if (data.viewboxTransform && mainZoomGroup) {
                         mainZoomGroup.attr('transform', data.viewboxTransform);
-                        const zoomBehavior = d3.zoom().transform;
                         svg.call(d3.zoom().transform, d3.zoomIdentity.fromString(data.viewboxTransform));
                     }
 
@@ -965,7 +931,7 @@
         data.links = []; 
         data.projectDescription = { summary: '', generatedDate: '' }; 
         data.colorLegend = {}; 
-        data.lineLegend = { "solid": "Standard Connection", "dotted": "Optional / Related Connection" }; // Reset line legend
+        data.lineLegend = { "solid": "Standard Connection", "dotted": "Optional / Related Connection" }; 
         updateProjectDescButton(); 
         
         const vB = svg.attr('viewBox').split(' ');
@@ -1119,7 +1085,6 @@
         clickedButton.classList.add('selected');
     }
 
-    // MODIFIED: updateConnectorModalArrowButtons to change text and icon
     function updateConnectorModalArrowButtons() {
         const addRemoveArrowBtn = g('addRemoveArrowBtn');
         const addRemoveArrowIcon = g('addRemoveArrowIcon');
@@ -1161,8 +1126,6 @@
         container.appendChild(entry); 
       }); 
 
-      // Populate line legend input fields
-      // Ensure lineLegend object exists before accessing its properties
       data.lineLegend = data.lineLegend || {}; 
       
       const lineLegendSection = document.createElement('div');
@@ -1188,7 +1151,6 @@
         else delete data.colorLegend[color]; 
       }); 
 
-      // Save line legend descriptions
       data.lineLegend = data.lineLegend || {}; 
       const solidDesc = g('solidLineDesc').value.trim();
       const dottedDesc = g('dottedLineDesc').value.trim();
@@ -1207,7 +1169,6 @@
       
       let hasContent = false;
 
-      // Add color legend items
       if (colorItems.length > 0) { 
         colorItems.forEach(([color, description]) => { 
           const item = document.createElement('div'); 
@@ -1224,7 +1185,6 @@
         hasContent = true;
       } 
 
-      // Add line legend items only if descriptions are provided
       if (data.lineLegend) {
           const solidDesc = data.lineLegend.solid;
           const dottedDesc = data.lineLegend.dotted;
@@ -1262,17 +1222,15 @@
       } 
     }
 
-    function createNode() { // Removed pN parameter as it's no longer used for positioning
+    function createNode() { 
         const nId = `node-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
         const cSD = BASE_NODE_DIMENSION * currentNodeSizeFactor;
         let iX, iY;
 
-        // Position new node in a general safe area
         const safeArea = getSafePositioningArea();
         iX = safeArea.centerX + (Math.random() * 200 - 100); 
         iY = safeArea.centerY + (Math.random() * 100 - 50);  
         
-        // Clamp new node position to safe area
         iX = Math.max(safeArea.left + cSD / 2, Math.min(iX, safeArea.right - cSD / 2));
         iY = Math.max(safeArea.top + cSD / 2, Math.min(iY, safeArea.bottom - cSD / 2));
 
@@ -1294,7 +1252,6 @@
         data.nodes.push(nN); 
         isInitialLayout = false; 
         update(); 
-        // No need to return nN or call nodeClick here as node creation is a standalone action.
     }
     function updateNodeSizes() { if (!simulation) return; const sD = BASE_NODE_DIMENSION * currentNodeSizeFactor; simulation.force('collide').radius((sD * 0.55) + 25); simulation.force('charge').strength(-1800 * (sD / 160)); isInitialLayout = false; update(); }
     
@@ -1313,7 +1270,6 @@
     function initializeApp() {
         initD3();
         
-        // Populate flowchart name if already set, otherwise default
         g('flowchartNameInput').value = data.flowchartName || 'Untitled Flowchart';
         updateProjectDescButton();
 
@@ -1329,7 +1285,6 @@
             button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); 
         }); }
         
-        // Attach event listeners for color swatches, now that functions are defined globally
         document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { 
             const color = swatch.dataset.color;
             const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55');
@@ -1343,8 +1298,8 @@
                 this.classList.add('selected-swatch');
                 g('nodeColor').value = this.dataset.color;
             });
-            swatch.addEventListener('mouseenter', showColorSwatchTooltip); // Now 'showColorSwatchTooltip' is defined
-            swatch.addEventListener('mouseleave', hideTooltip);           // Now 'hideTooltip' is defined
+            swatch.addEventListener('mouseenter', showColorSwatchTooltip);
+            swatch.addEventListener('mouseleave', hideTooltip);
         });
 
 
@@ -1362,10 +1317,9 @@
         g('templateBtn').onclick = () => { g('templateModal').style.display = 'block'; };
         document.querySelectorAll('#templateModal .modal-btn').forEach((b) => (b.onclick = (e) => { loadTemplate(e.target.dataset.template); g('templateModal').style.display = 'none'; }));
         
-        // NEW: Add New Node button handler
         g('addNodeHeaderBtn').onclick = (e) => { 
             e.preventDefault(); 
-            createNode(); // Call createNode without a parent, as it's a standalone "Add New Node"
+            createNode();
         };
 
         const addConnBtn = g('addConnectorBtn');
@@ -1378,8 +1332,6 @@
                 nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
             }
         });
-        // REMOVED: The 'Add Child Node' button from the modal.
-        // g('addNodeBtn').onclick = (e) => { e.preventDefault(); const nN = createNode(selectedNode); if (nN) { selectedNode = nN; nodeClick({ stopPropagation: () => {}, defaultPrevented: false }, nN); } };
         
         g('saveBtn').onclick = saveToFile;
         
@@ -1451,15 +1403,14 @@
             });
         });
 
-        // MODIFIED: "Add/Remove Arrow" button click handler
         g('addRemoveArrowBtn').addEventListener('click', function() {
             if (selectedLink) {
                 if (selectedLink.arrowDirection === 'none') {
-                    selectedLink.arrowDirection = 'forward'; // Default to 'forward' when adding
+                    selectedLink.arrowDirection = 'forward';
                 } else {
-                    selectedLink.arrowDirection = 'none'; // Toggle off if already present
+                    selectedLink.arrowDirection = 'none';
                 }
-                updateConnectorModalArrowButtons(); // Update UI for arrow buttons
+                updateConnectorModalArrowButtons();
             }
         });
 
