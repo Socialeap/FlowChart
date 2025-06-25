@@ -6,30 +6,17 @@
   <title>FlowChart Manager</title>
   <!-- Embed Lock: Verify correct Wix page via document.referrer -->
 <script>
-  (function() {
-    // 1) Soft-gate on your domain only
+  (function(){
     const ref = document.referrer || '';
+    // block every domain except your Wix site:
     if (!ref.startsWith('https://www.socialeap.net/')) {
       document.documentElement.innerHTML =
         '<body style="margin:0;padding:2rem;font:16px/1.4 sans-serif;' +
         'background:#20232a;color:#eee;display:flex;align-items:center;' +
         'justify-content:center;">' +
-        '⚠️ FlowChart Manager only runs on socialeap.net member pages.' +
+        '⚠️ FlowChart Manager Pro only runs for authorized users on Socialeap.' +
         '</body>';
       throw new Error('Embed validation failed');
-    }
-
-    // 2) Hard-gate on ?tier=pro passed to the iframe URL
-    const tier = new URLSearchParams(window.location.search).get('tier');
-    if (tier !== 'pro') {
-      document.documentElement.innerHTML =
-        '<body style="margin:0;padding:2rem;font:16px/1.4 sans-serif;' +
-        'background:#20232a;color:#eee;display:flex;align-items:center;' +
-        'justify-content:center;">' +
-        '🔒 FlowChart Manager Pro requires the Pro embed. ' +
-        'Please use the Pro page.' +
-        '</body>';
-      throw new Error('Tier validation failed');
     }
   })();
 </script>
