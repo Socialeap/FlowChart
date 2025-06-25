@@ -832,45 +832,46 @@
     function updateProjectDescButton() { const hasDesc = data.projectDescription && data.projectDescription.summary.trim().length > 0; g('projectDescBtn').style.display = hasDesc ? 'inline-flex' : 'none'; }
     function nodeClick(ev, d) { ev.stopPropagation(); selectedNode = d; g('taskName').value = d.name || ''; g('responsible').value = d.responsible || ''; g('status').value = d.status || 'Not Started'; g('deadline').value = d.deadline || ''; g('priority').value = d.priority || 'Normal'; populateTaskTable(d.actionDescription || ''); g('nodeColor').value = d.color || ''; document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch')); if (d.color) { const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`); if (sS) sS.classList.add('selected-swatch'); } g('modal').style.display = 'block'; }
     
-    function saveToFile() { 
-        try { 
-            data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; 
-            const currentTransform = mainZoomGroup.attr('transform');
-            data.viewboxTransform = currentTransform;
+    function saveToFile() {
+    try {
+        data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart';
+        const currentTransform = mainZoomGroup.attr('transform');
+        data.viewboxTransform = currentTransform;
 
-            const exportLinks = data.links.map(l => ({ 
-                source: l.source.id || l.source, 
-                target: l.target.id || l.target,
-                lineStyle: l.lineStyle || 'solid', 
-                arrowDirection: l.arrowDirection || 'none' 
-            }));
+        const exportLinks = data.links.map(l => ({
+            source: l.source.id || l.source,
+            target: l.target.id || l.target,
+            lineStyle: l.lineStyle || 'solid',
+            arrowDirection: l.arrowDirection || 'none'
+        }));
 
-            data.projectDescription = data.projectDescription || {};
-            data.projectDescription.generatedDate = new Date().toLocaleString();
+        data.projectDescription = data.projectDescription || {};
+        data.projectDescription.generatedDate = new Date().toLocaleString();
 
-            const securityPolicy = {
-    enforceDomainLock: true,
-    allowedDomain: "socialeap.net",
-    onFailureMessage: "This project file can only be opened on the authorized site for socialeap.net."
-};
+        const securityPolicy = {
+            enforceDomainLock: true,
+            allowedDomain: "socialeap.net",
+            onFailureMessage: "This project file can only be opened on the authorized site for socialeap.net."
+        };
 
-const expD = { 
-    flowchartName: data.flowchartName, 
-    projectDescription: data.projectDescription, 
-    securityPolicy: securityPolicy,
-    nodes: data.nodes.map(n => ({ 
-        id: n.id, name: n.name, status: n.status, responsible: n.responsible, 
-        deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, 
-        color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy 
-    })), 
-    links: exportLinks, 
-    colorLegend: data.colorLegend,
-    lineLegend: data.lineLegend, 
-    viewboxTransform: data.viewboxTransform 
-};
-            const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); 
-        } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } 
-    }
+        const expD = {
+            flowchartName: data.flowchartName,
+            projectDescription: data.projectDescription,
+            securityPolicy: securityPolicy,
+            nodes: data.nodes.map(n => ({
+                id: n.id, name: n.name, status: n.status, responsible: n.responsible,
+                deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription,
+                color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy
+            })),
+            links: exportLinks,
+            colorLegend: data.colorLegend,
+            lineLegend: data.lineLegend,
+            viewboxTransform: data.viewboxTransform
+        };
+        
+        const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+    } catch (e) { console.error('Save file error:', e); alert('Error saving.'); }
+}
     
     function loadFromFile(f) { 
         if (!f) { alert('No file selected.'); return; }
