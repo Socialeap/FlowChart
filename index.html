@@ -873,64 +873,69 @@
     } catch (e) { console.error('Save file error:', e); alert('Error saving.'); }
 }
     
-    function loadFromFile(f) { 
-        if (!f) { alert('No file selected.'); return; }
-        const r = new FileReader();
-        r.onload = (e) => {
-            try {
-                const fD = JSON.parse(e.target.result);
-              // --- Corrected Verification Step ---
-if (fD.securityPolicy && fD.securityPolicy.enforceDomainLock) {
-    const policy = fD.securityPolicy;
-    let currentHostname = window.location.hostname;
+  function loadFromFile(f) {
+    if (!f) { alert('No file selected.'); return; }
+    const r = new FileReader();
+    r.onload = (e) => {
+        try {
+            const fD = JSON.parse(e.target.result);
 
-    // Normalize the hostname by removing 'www.' if it exists
-    if (currentHostname.startsWith('www.')) {
-        currentHostname = currentHostname.substring(4);
-    }
-    
-    // Now, compare the normalized hostname to the allowed domain
-    if (currentHostname !== policy.allowedDomain) {
-        
-        // If the check fails, show the message from the file and STOP loading.
-        alert(policy.onFailureMessage);
-        return; // This stops the entire function.
-    }
-}
-// --- End of Corrected Verification Step ---
-                if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
-                    data = fD;
-                    g('flowchartNameInput').value = data.flowchartName || 'Untitled';
-                    updateProjectDescButton();
-                    g('fileNameDisplay').innerText = `Loaded: ${f.name}`;
-                    isInitialLayout = true; 
-                    data.nodes.forEach(d => {
-                      d.fx = d.x;
-                      d.fy = d.y;
-                    });
-                    data.links.forEach(l => {
-                        l.lineStyle = l.lineStyle || 'solid';
-                        l.arrowDirection = l.arrowDirection || 'none';
-                    });
-                    data.lineLegend = data.lineLegend || { "solid": "Standard Connection", "dotted": "Optional / Related Connection" };
+            // --- Bulletproof Verification Step ---
+            if (fD.securityPolicy && fD.securityPolicy.enforceDomainLock === true && fD.securityPolicy.allowedDomain) {
+                const policy = fD.securityPolicy;
+                
+                // Get the allowed domain from the file, make it lowercase, and remove spaces.
+                const allowedDomain = policy.allowedDomain.trim().toLowerCase();
+                
+                // Get the current hostname, make it lowercase, and remove spaces.
+                let currentHostname = window.location.hostname.trim().toLowerCase();
 
-                    if (data.viewboxTransform && mainZoomGroup) {
-                        mainZoomGroup.attr('transform', data.viewboxTransform);
-                        svg.call(d3.zoom().transform, d3.zoomIdentity.fromString(data.viewboxTransform));
-                    }
-
-                    update();
-                } else {
-                    alert('Invalid file format.');
+                // Normalize the hostname by removing 'www.' if it exists.
+                if (currentHostname.startsWith('www.')) {
+                    currentHostname = currentHostname.substring(4);
                 }
-            } catch (err) {
-                alert('Error parsing file.');
-                console.error('Load file error:', err);
+                
+                // Final, robust comparison.
+                if (currentHostname !== allowedDomain) {
+                    alert(policy.onFailureMessage);
+                    return; // Stop the entire function.
+                }
             }
-        };
-        r.onerror = () => alert('Error reading file.');
-        r.readAsText(f);
-    }
+            // --- End of Bulletproof Verification Step ---
+
+            if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
+                data = fD;
+                g('flowchartNameInput').value = data.flowchartName || 'Untitled';
+                updateProjectDescButton();
+                g('fileNameDisplay').innerText = `Loaded: ${f.name}`;
+                isInitialLayout = true;
+                data.nodes.forEach(d => {
+                    d.fx = d.x;
+                    d.fy = d.y;
+                });
+                data.links.forEach(l => {
+                    l.lineStyle = l.lineStyle || 'solid';
+                    l.arrowDirection = l.arrowDirection || 'none';
+                });
+                data.lineLegend = data.lineLegend || { "solid": "Standard Connection", "dotted": "Optional / Related Connection" };
+
+                if (data.viewboxTransform && mainZoomGroup) {
+                    mainZoomGroup.attr('transform', data.viewboxTransform);
+                    svg.call(d3.zoom().transform, d3.zoomIdentity.fromString(data.viewboxTransform));
+                }
+
+                update();
+            } else {
+                alert('Invalid file format.');
+            }
+        } catch (err) {
+            alert('Error parsing file.');
+            console.error('Load file error:', err);
+        }
+    };
+    r.onerror = () => alert('Error reading file.');
+    r.readAsText(f);
+}
     
     function loadTemplate(tmpl) { 
         data.flowchartName = tmpl.charAt(0).toUpperCase() + tmpl.slice(1) + ' Template'; 
