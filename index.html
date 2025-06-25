@@ -848,19 +848,26 @@
             data.projectDescription = data.projectDescription || {};
             data.projectDescription.generatedDate = new Date().toLocaleString();
 
-            const expD = { 
-                flowchartName: data.flowchartName, 
-                projectDescription: data.projectDescription, 
-                nodes: data.nodes.map(n => ({ 
-                    id: n.id, name: n.name, status: n.status, responsible: n.responsible, 
-                    deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, 
-                    color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy 
-                })), 
-                links: exportLinks, 
-                colorLegend: data.colorLegend,
-                lineLegend: data.lineLegend, 
-                viewboxTransform: data.viewboxTransform 
-            }; 
+            const securityPolicy = {
+    enforceDomainLock: true,
+    allowedDomain: "socialeap.net",
+    onFailureMessage: "This project file can only be opened on the authorized site for socialeap.net."
+};
+
+const expD = { 
+    flowchartName: data.flowchartName, 
+    projectDescription: data.projectDescription, 
+    securityPolicy: securityPolicy,
+    nodes: data.nodes.map(n => ({ 
+        id: n.id, name: n.name, status: n.status, responsible: n.responsible, 
+        deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, 
+        color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy 
+    })), 
+    links: exportLinks, 
+    colorLegend: data.colorLegend,
+    lineLegend: data.lineLegend, 
+    viewboxTransform: data.viewboxTransform 
+};
             const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); 
         } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } 
     }
