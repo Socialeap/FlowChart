@@ -864,7 +864,7 @@
             }));
 
             data.projectDescription = data.projectDescription || {};
-            data.projectDescription.generatedDate = new Date().toLocaleString();
+            data.projectDescription.generatedDate = new Date().toISOString();
 
             const expD = { 
                 flowchartName: data.flowchartName, 
