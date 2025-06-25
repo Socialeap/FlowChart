@@ -4,41 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowChart Manager</title>
-<script>
-  // 1) Block initialization until we see the Wix ping
-  window.__gotWixPing = false;
 
-  window.addEventListener('message', ev => {
-    if (ev.origin === 'https://www.socialeap.net' && ev.data === 'WIX_VALID_PAGE') {
-      window.__gotWixPing = true;
-      // once we know we’re inside Wix + logged-in, start the real app
-      initFlowChart();
-    }
-  });
-
-  // 2) Inject the hidden “verifyAuthPage” iframe
-  document.write(`
-    <iframe src="https://www.socialeap.net/_functions/verifyAuthPage"
-            style="display:none;width:0;height:0;border:0"
-            id="wixAuthFrame"></iframe>
-  `);
-
-  // 3) Failsafe: if no ping within 800 ms, lock it down
-  setTimeout(() => {
-    if (!window.__gotWixPing) {
-      document.documentElement.innerHTML = 
-        '<body style="margin:0;padding:2rem;' +
-        'display:flex;align-items:center;justify-content:center;' +
-        'font:16px/1.4 sans-serif;background:#20232a;color:#eee;">' +
-        '🔒 Access Denied: must be inside your authenticated Wix site.' +
-        '</body>';
-      throw new Error('Embed validation failed');
-    }
-  }, 800);
-
-  // ⚠️ Remove any other direct calls to initFlowChart() below…
-  // Everything else waits until we get the Wix ping.
-</script>
   <link
     rel="icon"
     type="image/png"
