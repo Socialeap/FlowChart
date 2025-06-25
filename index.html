@@ -926,6 +926,24 @@
         r.onload = (e) => {
             try {
                 const fD = JSON.parse(e.target.result);
+                // --- Security Check Activated on File Load ---
+const isTestMode = new URLSearchParams(window.location.search).get('testmode') === 'true';
+
+// Only run the security check if we are NOT in test mode.
+if (!isTestMode) {
+    const allowedDomain = 'socialeap.net';
+    let currentHostname = window.location.hostname.trim().toLowerCase();
+
+    if (currentHostname.startsWith('www.')) {
+        currentHostname = currentHostname.substring(4);
+    }
+
+    if (currentHostname !== allowedDomain) {
+        alert('Project files can only be loaded on the authorized site for ' + allowedDomain + '. To test on other domains, add ?testmode=true to the URL.');
+        return; // This stops the file from loading.
+    }
+}
+// --- End of Security Check ---
                 if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
                     
                     fD.nodes.forEach(node => {
