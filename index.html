@@ -880,28 +880,33 @@
         try {
             const fD = JSON.parse(e.target.result);
 
-            // --- Bulletproof Verification Step ---
-            if (fD.securityPolicy && fD.securityPolicy.enforceDomainLock === true && fD.securityPolicy.allowedDomain) {
-                const policy = fD.securityPolicy;
-                
-                // Get the allowed domain from the file, make it lowercase, and remove spaces.
-                const allowedDomain = policy.allowedDomain.trim().toLowerCase();
-                
-                // Get the current hostname, make it lowercase, and remove spaces.
-                let currentHostname = window.location.hostname.trim().toLowerCase();
+            // --- DIAGNOSTIC TEST BLOCK ---
+if (fD.securityPolicy && fD.securityPolicy.enforceDomainLock === true && fD.securityPolicy.allowedDomain) {
+    const policy = fD.securityPolicy;
+    const allowedDomainFromFile = policy.allowedDomain.trim().toLowerCase();
+    
+    const hostnameFromBrowser = window.location.hostname.trim().toLowerCase();
+    let normalizedHostname = hostnameFromBrowser;
 
-                // Normalize the hostname by removing 'www.' if it exists.
-                if (currentHostname.startsWith('www.')) {
-                    currentHostname = currentHostname.substring(4);
-                }
-                
-                // Final, robust comparison.
-                if (currentHostname !== allowedDomain) {
-                    alert(policy.onFailureMessage);
-                    return; // Stop the entire function.
-                }
-            }
-            // --- End of Bulletproof Verification Step ---
+    if (normalizedHostname.startsWith('www.')) {
+        normalizedHostname = normalizedHostname.substring(4);
+    }
+
+    // This will display a series of pop-ups with the data we need.
+    alert("--- Starting Diagnostic Check ---");
+    alert("Hostname reported by browser: " + window.location.hostname);
+    alert("Allowed domain from file: " + policy.allowedDomain);
+    alert("Cleaned & Normalized Hostname: " + normalizedHostname);
+    alert("Cleaned Allowed Domain: " + allowedDomainFromFile);
+    alert("Final Check: Is '" + normalizedHostname + "' a match for '" + allowedDomainFromFile + "'? Result: " + (normalizedHostname === allowedDomainFromFile));
+
+    // The original check is still here so we can see the final result.
+    if (normalizedHostname !== allowedDomainFromFile) {
+        alert(policy.onFailureMessage);
+        return; 
+    }
+}
+// --- END OF DIAGNOSTIC TEST BLOCK ---
 
             if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
                 data = fD;
