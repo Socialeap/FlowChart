@@ -6,19 +6,39 @@
   <title>FlowChart Manager</title>
   <!-- Embed Lock: Verify correct Wix page via document.referrer -->
 <script>
-  (function(){
-    const ref = document.referrer || '';
-    // block every domain except your Wix site:
-    if (!ref.startsWith('https://www.socialeap.net/')) {
-      document.documentElement.innerHTML =
-        '<body style="margin:0;padding:2rem;font:16px/1.4 sans-serif;' +
-        'background:#20232a;color:#eee;display:flex;align-items:center;' +
-        'justify-content:center;">' +
-        '⚠️ FlowChart Manager Pro only runs for authorized users on Socialeap.' +
-        '</body>';
-      throw new Error('Embed validation failed');
+  // --- Receive parent URL & unlock Pro features ---
+  let __PARENT_URL = null;
+  function lockPro() {
+    document.body.innerHTML =
+      '<div style="padding:2rem;font:16px/1.4 sans-serif;color:#eee;text-align:center;">' +
+      '🔒 This Pro version only runs on the official FlowChart Manager site.' +
+      '</div>';
+    throw new Error('Pro embed validation failed');
+  }
+
+  window.addEventListener('message', ev => {
+    // 1) Verify it really came from your Wix domain:
+    if (ev.origin !== 'https://www.socialeap.net') return;
+    // 2) Check the message type:
+    if (ev.data?.type === 'FLOWCHART_PARENT_URL') {
+      __PARENT_URL = ev.data.url;
+      // 3) Optionally verify it’s the exact Pro path:
+      if (!__PARENT_URL.includes('/flowchart-manager')) {
+        lockPro();
+      } else {
+        // 4) Now you know you’re on the Pro page—start the app
+        initFlowChart(); 
+      }
     }
-  })();
+  });
+
+  // 5) Failsafe: if no handshake in 1s, lock it
+  setTimeout(() => {
+    if (!__PARENT_URL) lockPro();
+  }, 1000);
+
+  // Prevent your normal init from running immediately!
+  // Move your existing initFlowChart() call *into* the onmessage handler above.
 </script>
 
   <link
