@@ -6,23 +6,6 @@
   <title>FlowChart Manager</title>
   <!-- Embed Lock: Verify correct Wix page via document.referrer -->
 
-<script>
-  (function(){
-    // Only allow if the URL ends in #pro
-    if (window.location.hash !== '#pro') {
-      document.documentElement.innerHTML =
-        '<body style="margin:0;padding:2rem;font:16px/1.4 sans-serif;' +
-        'background:#20232a;color:#eee;display:flex;align-items:center;' +
-        'justify-content:center;">' +
-        '🔒 Pro features only run on the official FlowChart Manager page.' +
-        '</body>';
-      throw new Error('Embed validation failed');
-    }
-    // else: hash is correct, continue loading the app
-  })();
-</script>
-
-
   <link
     rel="icon"
     type="image/png"
