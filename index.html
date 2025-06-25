@@ -98,6 +98,8 @@
     #flowchart { display: block; width: 100%; height: 100%; }
     line.link { cursor: pointer; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
     line.link.selected { stroke: var(--link-selected-color) !important; stroke-width: 4px; stroke-dasharray: 5, 5; }
+    #banner-container { position: absolute; top: 10px; left: 10px; width: 35%; max-width: 420px; aspect-ratio: 1500 / 625; border-radius: 12px; overflow: hidden; background: transparent; z-index: 50; }
+    #banner-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding-top: 50px; overflow-y: auto; }
     .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); color: var(--modal-text); margin: 20px auto; padding: 2rem; width: 90%; max-width: 750px; overflow-y: auto; max-height: calc(100vh - 100px); border-radius: 20px; position: relative; box-shadow: var(--modal-strong-shadow); transition: background 0.3s ease, border-color 0.3s ease; }
     #connectorOptionsModal .modal-content, #colorLegendModal .modal-content { max-width: 500px; }
@@ -283,34 +285,13 @@
         pointer-events: none;
     }
   </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
 </head>
 
 <body>
-  <script>
-    (function() {
-      // This self-executing function runs immediately to validate the embed context.
-      const expectedToken = 'PRO12345'; // Hard-coded token for the Pro version
-      const expectedReferrer = 'https://www.socialeap.net';
-      
-      const params = new URLSearchParams(window.location.search);
-      const receivedToken = params.get('wixSig');
-      const referrer = document.referrer;
-
-      const isReferrerValid = referrer && referrer.startsWith(expectedReferrer);
-      const isTokenValid = receivedToken === expectedToken;
-
-      // If either check fails, halt the app and show the lock screen.
-      if (!isReferrerValid || !isTokenValid) {
-        document.body.innerHTML = `
-          <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; font-size:1.2rem; background-color:#20232a; color:white; text-align:center; padding: 20px;">
-            ⚠️ FlowChart Manager is locked to private pages on socialeap.net.
-          </div>`;
-        // This error will stop any subsequent scripts from running.
-        throw new Error('Embed validation failed. Referrer: ' + referrer + ', Token: ' + receivedToken);
-      }
-    })();
-  </script>
-
   <header>
     <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
     <nav>
@@ -427,18 +408,14 @@
         </form>
     </div>
   </div>
-  <div id="shareModal" class="modal"><div class="modal-content"><span class="close-button" id="closeShareModal">×</span><h2>Share Flowchart</h2><p style="text-align: center; padding: 2rem 0;">Share your flowchart with a public link! This feature is coming soon.</p></div></div>
+  <div id="shareModal" class="modal"><div class="modal-content"><span class="close-button" id="closeShareModal">×</span><h2>Share Flowchart</h2><iframe src="https://view.genially.com/6845a98ee4504c754b83f421" allowfullscreen="true" scrolling="no" frameborder="0"></iframe></div></div>
   <div id="projectDescModal" class="modal"><div class="modal-content"><span class="close-button" id="closeProjectDescModal">×</span><h2>Project Description</h2><p id="projectSummary"></p><p id="projectGeneratedDate"></p></div></div>
   <div id="colorLegendModal" class="modal"><div class="modal-content"><span class="close-button" id="closeColorLegendModal">×</span><h2>Edit Color Legend</h2><form id="colorLegendForm"><p>Define what each color represents. These will be shown in a legend below the header.</p><div id="color-legend-entries"></div><div class="action-buttons"><button type="submit" class="modal-btn">Save Legend</button></div></form></div></div>
   <div id="tooltip"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
-
   <script>
     let selectedNode = null, selectedLink = null,
-      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } },
+      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } }, // ADDED lineLegend default
       simulation, svg, nodeGroup, linkGroup, mainZoomGroup,
       isInitialLayout = true;
     const BASE_NODE_DIMENSION = 160;
