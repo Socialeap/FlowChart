@@ -5,81 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowChart Manager</title>
   <!-- Embed Lock: Verify correct Wix page via document.referrer -->
+
 <script>
+  // — PRO EMBED HANDSHAKE LISTENER —
   let __PARENT_URL = null;
 
-  function lockPro(reason) {
-    document.body.innerHTML =
-      '<div style="padding:2rem;font:16px/1.4 sans-serif;color:#eee;text-align:center;">' +
-      '🔒 This Pro version only runs on your official FlowChart Manager page.<br>' +
-      '<pre>' + reason + '</pre>' +
-      '</div>';
-    throw new Error('Pro embed validation failed: ' + reason);
+  function lockPro() {
+    document.documentElement.innerHTML =
+      '<body style="margin:0;padding:2rem;font:16px/1.4 sans-serif;' +
+      'background:#20232a;color:#eee;display:flex;align-items:center;' +
+      'justify-content:center;">' +
+      '🔒 Pro features only run on the official FlowChart Manager page.' +
+      '</body>';
+    throw new Error('Pro embed validation failed');
   }
 
-  function isValidParentUrl(url) {
-    try {
-      const parsed = new URL(url);
-      console.log('[DEBUG] Parsed parent URL:', parsed);
-      if (
-        parsed.protocol === 'https:' &&
-        parsed.hostname === 'www.socialeap.net'
-      ) {
-        // Optional: Only allow /flowchart-manager path
-        // return parsed.pathname.startsWith('/flowchart-manager');
-        return true;
-      }
-    } catch (e) {
-      console.warn('[DEBUG] Failed to parse parent URL:', url, e);
-    }
-    return false;
-  }
-
-  // Log all postMessages for debugging
-  window.addEventListener('message', function(ev) {
-    console.log('[DEBUG] message event received:', ev);
-
-    // 1) Log origin and data
-    console.log('[DEBUG] Event origin:', ev.origin);
-    console.log('[DEBUG] Event data:', ev.data);
-
-    // 2) Check origin
-    if (ev.origin !== 'https://www.socialeap.net') {
-      console.warn('[DEBUG] Origin mismatch:', ev.origin);
-      return;
-    }
-
-    // 3) Check message type
+  // 1) Listen for the parent page to send us its URL
+  window.addEventListener('message', ev => {
+    if (ev.origin !== 'https://www.socialeap.net') return;
     if (ev.data?.type === 'FLOWCHART_PARENT_URL') {
       __PARENT_URL = ev.data.url;
-      console.log('[DEBUG] Received parent URL:', __PARENT_URL);
-
-      // 4) Validate parent URL
-      if (!isValidParentUrl(__PARENT_URL)) {
-        lockPro('Invalid parent URL: ' + __PARENT_URL);
+      // 2) Verify it’s the exact Pro path
+      if (!__PARENT_URL.includes('/flowchart-manager')) {
+        lockPro();
       } else {
-        // 5) Optionally restrict to a specific path
-        // if (!__PARENT_URL.includes('/flowchart-manager')) {
-        //   lockPro('Parent URL does not include /flowchart-manager');
-        //   return;
-        // }
-        console.log('[DEBUG] Parent URL validated, initializing FlowChart');
+        // 3) Now that it’s verified, start your app
         initFlowChart();
       }
-    } else {
-      console.warn('[DEBUG] Unexpected message type:', ev.data?.type);
     }
   });
 
-  // 6) Failsafe: if no handshake in 1s, lock it
-  setTimeout(() => {
-    if (!__PARENT_URL) lockPro('No valid postMessage received within timeout.');
-  }, 1000);
+  // 4) Failsafe: if no handshake within 1s, lock the UI
+  setTimeout(() => { if (!__PARENT_URL) lockPro(); }, 1000);
 
-  // For debugging: log when script loads
-  console.log('[DEBUG] FlowChart embed script loaded');
+  // ⚠️ Remove any direct initFlowChart() calls below;
+  // we only call it after a valid postMessage.
 </script>
-
 
 
   <link
