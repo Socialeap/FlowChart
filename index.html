@@ -294,24 +294,6 @@
 <body>
 
 <body>
-  <script>
-    const parentUrl = document.referrer || '';
-    const allowedHost = 'www.socialeap.net';
-    // If the embed wasn’t loaded from your official Wix domain, bail out:
-    if (!parentUrl.includes(allowedHost)) {
-      document.documentElement.innerHTML = `
-        <div style="font-family:sans-serif;
-                    text-align:center;
-                    padding:5rem;
-                    color:#a00;">
-          <h1>Access Denied</h1>
-          <p>Pro features only run on the official FlowChart Manager page.</p>
-        </div>`;
-      throw new Error('Embed validation failed');
-    }
-  </script>
-
-  <!-- rest of your normal HTML/JS -->
 
   <header>
     <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
