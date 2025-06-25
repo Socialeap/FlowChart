@@ -908,9 +908,10 @@
             const url = URL.createObjectURL(blb);
             const a = document.createElement('a');
             a.href = url;
-            a.download = (expD.flowchartName.replace(/[^a-z0--9]/gi, '_').toLowerCase() || 'flowchart') + '.json';
+            // --- THIS LINE IS CORRECTED ---
+            a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json';
             document.body.appendChild(a);
-a.click();
+            a.click();
             
             setTimeout(() => { 
                 document.body.removeChild(a); 
