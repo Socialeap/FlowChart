@@ -878,6 +878,20 @@ const expD = {
         r.onload = (e) => {
             try {
                 const fD = JSON.parse(e.target.result);
+              // --- New Verification Step ---
+if (fD.securityPolicy && fD.securityPolicy.enforceDomainLock) {
+    const policy = fD.securityPolicy;
+    const currentHostname = window.location.hostname;
+
+    // Check if the current domain is valid according to the file's policy
+    if (currentHostname !== policy.allowedDomain && !currentHostname.endsWith('.' + policy.allowedDomain)) {
+
+        // If the check fails, show the message from the file and STOP loading.
+        alert(policy.onFailureMessage);
+        return; // This stops the entire function.
+    }
+}
+// --- End of Verification Step ---
                 if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
                     data = fD;
                     g('flowchartNameInput').value = data.flowchartName || 'Untitled';
