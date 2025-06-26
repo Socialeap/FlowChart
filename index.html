@@ -290,29 +290,7 @@
   <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
 </head>
-
 <body>
-
-<body>
-  <script>
-    const parentUrl = document.referrer || '';
-    const allowedHost = 'www.socialeap.net';
-    // If the embed wasn’t loaded from your official Wix domain, bail out:
-    if (!parentUrl.includes(allowedHost)) {
-      document.documentElement.innerHTML = `
-        <div style="font-family:sans-serif;
-                    text-align:center;
-                    padding:5rem;
-                    color:#a00;">
-          <h1>Access Denied</h1>
-          <p>Pro features only run on the official FlowChart Manager page.</p>
-        </div>`;
-      throw new Error('Embed validation failed');
-    }
-  </script>
-
-  <!-- rest of your normal HTML/JS -->
-
   <header>
     <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
     <nav>
@@ -732,7 +710,7 @@
             nameDiv.text(d.name || '');
             let indicatorHtml = d.priority === 'Low' ? '🔴 ⚪️ ⚪️' : d.priority === 'Normal' ? '🔴 🔴 ⚪️' : d.priority === 'High' ? '🔴 🔴 🔴' : '⚪️ ⚪️ ⚪️';
             prDiv.html(indicatorHtml);
-            let tasks = []; try { if (d.actionDescription) tasks = JSON.parse(d.actionDescription); } catch (e) {}
+            let tasks = d.actionDescription || [];
             const compC = tasks.filter((t) => t.completed).length, totC = tasks.length;
             if (totC > 0) { pillDiv.text(`✓ ${compC}/${totC}`).style('display', 'block'); } 
             else { pillDiv.style('display', 'none'); }
@@ -780,7 +758,13 @@
       switch (s) { case 'Not Started': return '#e74c3c'; case 'In Progress': return '#f1c40f'; case 'Completed': return '#2ecc71'; default: return '#3498db'; }
     }
     
-    function openAIAssistant() { const url = 'https://chatgpt.com/g/g-678c450b02988191b07d47c7a5bd9d4a-flow-chart-assistant'; const sW = window.screen.availWidth, sH = window.screen.availHeight, bS = Math.min(sW, sH); const pW = Math.floor(bS * 0.45), pH = Math.floor(bS * 0.55), l = Math.floor((sW - pW) / 2), t = Math.floor((sH - pH) / 2); window.open(url, 'FlowchartAIAssistant', `width=${pW},height=${pH},left=${l},top=${t},resizable=yes,scrollbars=yes`); }
+    function openAIAssistant() {
+        const url = 'https://chatgpt.com/g/g-678c450b02988191b07d47c7a5bd9d4a-flow-chart-assistant';
+        const sW = window.screen.availWidth, sH = window.screen.availHeight, bS = Math.min(sW, sH);
+        const pW = Math.floor(bS * 0.45), pH = Math.floor(bS * 0.55);
+        const l = Math.floor((sW - pW) / 2), t = Math.floor((sH - pH) / 2);
+        window.open(url, 'FlowchartAIAssistant', `width=${pW},height=${pH},left=${l},top=${t},resizable=yes,scrollbars=yes`);
+    }
     
     function addTaskRow(t) {
         const tb = g('taskTable').querySelector('tbody');
@@ -828,12 +812,19 @@
         ti.dispatchEvent(new Event('input')); 
     }
 
-    function populateTaskTable(str) { const tb = g('taskTable').querySelector('tbody'); tb.innerHTML = ''; let arr = []; try { arr = JSON.parse(str); if (!Array.isArray(arr)) arr = str.trim() ? [{ completed: false, task: str }] : []; } catch (e) { arr = str.trim() ? [{ completed: false, task: str }] : []; } if (Array.isArray(str)) arr = str; if (arr.length > 0) arr.forEach((t) => addTaskRow(t)); else addTaskRow({}); }
+    function populateTaskTable(taskArray) {
+        const tb = g('taskTable').querySelector('tbody');
+        tb.innerHTML = '';
+        if (Array.isArray(taskArray) && taskArray.length > 0) {
+            taskArray.forEach((t) => addTaskRow(t));
+        } else {
+            addTaskRow({}); 
+        }
+    }
     
     function showTaskPopup(txt) {
         const linkedHtml = linkifyHtml(txt, {
-            target: '_blank',           
-            rel: 'noopener noreferrer'  
+            target: '_blank'
         });
 
         const taskFullTextElement = g('taskFullText');
@@ -848,48 +839,108 @@
     }
     
     function updateProjectDescButton() { const hasDesc = data.projectDescription && data.projectDescription.summary.trim().length > 0; g('projectDescBtn').style.display = hasDesc ? 'inline-flex' : 'none'; }
-    function nodeClick(ev, d) { ev.stopPropagation(); selectedNode = d; g('taskName').value = d.name || ''; g('responsible').value = d.responsible || ''; g('status').value = d.status || 'Not Started'; g('deadline').value = d.deadline || ''; g('priority').value = d.priority || 'Normal'; populateTaskTable(d.actionDescription || ''); g('nodeColor').value = d.color || ''; document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch')); if (d.color) { const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`); if (sS) sS.classList.add('selected-swatch'); } g('modal').style.display = 'block'; }
     
-    function saveToFile() { 
-        try { 
-            data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart'; 
+    function nodeClick(ev, d) {
+        ev.stopPropagation();
+        selectedNode = d;
+        g('taskName').value = d.name || '';
+        g('responsible').value = d.responsible || '';
+        g('status').value = d.status || 'Not Started';
+        g('deadline').value = d.deadline || '';
+        g('priority').value = d.priority || 'Normal';
+        populateTaskTable(d.actionDescription || []);
+        g('nodeColor').value = d.color || '';
+        document.querySelectorAll('.color-panel .color-swatch').forEach((s) => s.classList.remove('selected-swatch'));
+        if (d.color) {
+            const sS = document.querySelector(`.color-swatch[data-color='${d.color}']`);
+            if (sS) sS.classList.add('selected-swatch');
+        }
+        g('modal').style.display = 'block';
+    }
+
+    function saveToFile() {
+        try {
+            data.flowchartName = g('flowchartNameInput').value || 'Untitled Flowchart';
             const currentTransform = mainZoomGroup.attr('transform');
             data.viewboxTransform = currentTransform;
 
-            const exportLinks = data.links.map(l => ({ 
-                source: l.source.id || l.source, 
+            const exportLinks = data.links.map(l => ({
+                source: l.source.id || l.source,
                 target: l.target.id || l.target,
-                lineStyle: l.lineStyle || 'solid', 
-                arrowDirection: l.arrowDirection || 'none' 
+                lineStyle: l.lineStyle || 'solid',
+                arrowDirection: l.arrowDirection || 'none'
             }));
 
             data.projectDescription = data.projectDescription || {};
             data.projectDescription.generatedDate = new Date().toLocaleString();
 
-            const expD = { 
-                flowchartName: data.flowchartName, 
-                projectDescription: data.projectDescription, 
-                nodes: data.nodes.map(n => ({ 
-                    id: n.id, name: n.name, status: n.status, responsible: n.responsible, 
-                    deadline: n.deadline, priority: n.priority, actionDescription: n.actionDescription, 
-                    color: n.color, x: n.x, y: n.y, fx: n.fx, fy: n.fy 
-                })), 
-                links: exportLinks, 
+            const expD = {
+                flowchartName: data.flowchartName,
+                projectDescription: data.projectDescription,
+                nodes: data.nodes.map(n => ({
+                    id: n.id,
+                    name: n.name,
+                    status: n.status,
+                    responsible: n.responsible,
+                    deadline: n.deadline,
+                    priority: n.priority,
+                    actionDescription: JSON.stringify(n.actionDescription || []), // Stringify only on export
+                    color: n.color,
+                    x: n.x,
+                    y: n.y,
+                    fx: n.fx,
+                    fy: n.fy
+                })),
+                links: exportLinks,
                 colorLegend: data.colorLegend,
-                lineLegend: data.lineLegend, 
-                viewboxTransform: data.viewboxTransform 
-            }; 
-            const dS = JSON.stringify(expD, null, 2), blb = new Blob([dS], { type: 'application/json' }), url = URL.createObjectURL(blb), a = document.createElement('a'); a.href = url; a.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100); 
-        } catch (e) { console.error('Save file error:', e); alert('Error saving.'); } 
+                lineLegend: data.lineLegend,
+                viewboxTransform: data.viewboxTransform
+            };
+            
+            const dataString = JSON.stringify(expD, null, 2);
+            const blob = new Blob([dataString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = (expD.flowchartName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'flowchart') + '.json';
+            
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+            
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+
+        } catch (e) {
+            console.error('Save file error:', e);
+            alert('Error saving file.');
+        }
     }
-    
-    function loadFromFile(f) { 
+
+    function loadFromFile(f) {
         if (!f) { alert('No file selected.'); return; }
         const r = new FileReader();
         r.onload = (e) => {
             try {
                 const fD = JSON.parse(e.target.result);
+
                 if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
+                    
+                    fD.nodes.forEach(node => {
+                        if (typeof node.actionDescription === 'string') {
+                            try {
+                                const parsed = JSON.parse(node.actionDescription);
+                                node.actionDescription = Array.isArray(parsed) ? parsed : [];
+                            } catch (parseError) {
+                                node.actionDescription = [];
+                            }
+                        } else if (!Array.isArray(node.actionDescription)) {
+                             node.actionDescription = [];
+                        }
+                    });
+
                     data = fD;
                     g('flowchartNameInput').value = data.flowchartName || 'Untitled';
                     updateProjectDescButton();
@@ -1041,7 +1092,7 @@
         } 
         
         data.nodes.forEach(n => { 
-            n.actionDescription = '[]'; 
+            n.actionDescription = [];
             n.responsible = n.responsible || '';
             n.deadline = n.deadline || '';
             n.priority = n.priority || 'Normal';
@@ -1239,7 +1290,7 @@
             responsible: '', 
             deadline: '', 
             priority: 'Normal', 
-            actionDescription: '[]', 
+            actionDescription: [], 
             color: null, 
             x: iX, 
             y: iY, 
@@ -1375,11 +1426,33 @@
             }
         };
 
-        g('taskForm').onsubmit = (e) => { e.preventDefault(); if (selectedNode) { let tsks = []; g('taskTable').querySelectorAll('tbody tr').forEach((r) => { 
-            let chk = r.querySelector('input[type="checkbox"]'), 
-                txt = r.querySelector('.task-detail-textarea'); 
-            if (txt && txt.value.trim() !== '') tsks.push({ completed: chk.checked, task: txt.value.trim() }); 
-        }); Object.assign(selectedNode, { name: g('taskName').value, responsible: g('responsible').value, status: g('status').value, deadline: g('deadline').value, priority: g('priority').value, actionDescription: JSON.stringify(tsks), color: g('nodeColor').value || null, }); selectedNode.fx = selectedNode.x; selectedNode.fy = selectedNode.y; isInitialLayout = false; update(); } g('modal').style.display = 'none'; };
+        g('taskForm').onsubmit = (e) => {
+            e.preventDefault();
+            if (selectedNode) {
+                let tasks = [];
+                g('taskTable').querySelectorAll('tbody tr').forEach((r) => {
+                    let chk = r.querySelector('input[type="checkbox"]');
+                    let txt = r.querySelector('.task-detail-textarea');
+                    if (txt && txt.value.trim() !== '') {
+                        tasks.push({ completed: chk.checked, task: txt.value.trim() });
+                    }
+                });
+                Object.assign(selectedNode, {
+                    name: g('taskName').value,
+                    responsible: g('responsible').value,
+                    status: g('status').value,
+                    deadline: g('deadline').value,
+                    priority: g('priority').value,
+                    actionDescription: tasks,
+                    color: g('nodeColor').value || null,
+                });
+                selectedNode.fx = selectedNode.x;
+                selectedNode.fy = selectedNode.y;
+                isInitialLayout = false;
+                update();
+            }
+            g('modal').style.display = 'none';
+        };
         
         g('confirmDeleteLinkBtn').onclick = () => { 
             if (selectedLink && confirm('Are you sure you want to delete this connection?')) { 
