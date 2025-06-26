@@ -4,18 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowChart Manager</title>
-
-  <link
-    rel="icon"
-    type="image/png"
-    href="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png"
-  />
-
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
-  />
-
+  <link rel="icon" type="image/png" href="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
   <style>
     :root {
       --bg-primary: linear-gradient(135deg, #939ef5 0%, #9e76d6 100%);
@@ -45,7 +35,6 @@
       --link-color: #555;
       --link-selected-color: #e74c3c;
     }
-
     body.dark-mode {
       --bg-primary: linear-gradient(135deg, #101020 0%, #0c1428 50%, #08203f 100%);
       --text-on-header: #e0e0e0;
@@ -64,7 +53,6 @@
       --link-color: #aaa;
       --link-selected-color: #ff5252;
     }
-
     * { box-sizing: border-box; }
     body { margin: 0; font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: #333; display: flex; flex-direction: column; min-height: 100vh; transition: background 0.5s ease; position: relative; overflow-x: hidden; }
     body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary); z-index: -1; transition: background 0.5s ease; }
@@ -84,16 +72,8 @@
     #color-legend-display.visible { display: flex; }
     .legend-display-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-on-header); }
     .legend-display-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); }
-    .legend-display-line {
-        width: 30px;
-        height: 2px;
-        background-color: var(--text-on-header);
-        margin: 0 5px;
-    }
-    .legend-display-line.dotted {
-        border-bottom: 2px dotted var(--text-on-header);
-        background-color: transparent; 
-    }
+    .legend-display-line { width: 30px; height: 2px; background-color: var(--text-on-header); margin: 0 5px; }
+    .legend-display-line.dotted { border-bottom: 2px dotted var(--text-on-header); background-color: transparent; }
     #flowchartContainer { width: calc(100% - 2rem); flex-grow: 1; border: 1px solid var(--flowchart-container-border); background: var(--flowchart-container-bg); overflow: hidden; position: relative; margin: 1rem; border-radius: 20px; box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1); }
     #flowchart { display: block; width: 100%; height: 100%; }
     line.link { cursor: pointer; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
@@ -132,168 +112,38 @@
     .modal-content li, #userGuideModal .modal-content li { margin-bottom: 0.7em; line-height: 1.6; }
     #userGuideModal .modal-content li strong { font-weight: 600; color: var(--modal-text); }
     .modal-content p, #userGuideModal .modal-content p { margin-bottom: 1em; line-height: 1.6; }
-    #taskTextPopup #taskFullText a {
-        color: var(--link-color);
-        text-decoration: underline;
-    }
-    #taskTextPopup #taskFullText a:hover {
-        text-decoration: none;
-    }
-    .instruction-text {
-        font-size: 0.85em;
-        color: var(--modal-text);
-        opacity: 0.7;
-        margin-left: 0.5em;
-        font-weight: normal;
-    }
-    #taskTable tbody tr td.task-cell-content { 
-        display: flex; 
-        align-items: flex-end; 
-        gap: 8px; 
-    }
-    #taskTable tbody tr .task-detail-textarea {
-        flex-grow: 1;
-        min-height: 38px;
-        overflow: hidden;
-        resize: none;
-        border-radius: 12px;
-        box-sizing: border-box;
-        padding-right: 12px;
-    }
-    .task-view-icon {
-        flex-shrink: 0;
-        font-size: 1.1em;
-        color: var(--close-button-color);
-        cursor: pointer;
-        transition: color 0.2s ease, transform 0.2s ease;
-        padding: 5px;
-        border-radius: 50%;
-        margin-bottom: 3px;
-    }
-    .task-view-icon:hover {
-        color: var(--close-button-hover-color);
-        transform: scale(1.1);
-        background: rgba(255, 255, 255, 0.1);
-    }
-    .color-panel {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        margin-top: 5px;
-    }
-    .color-swatch {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: 2px solid var(--glass-border);
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        flex-shrink: 0;
-    }
-    .color-swatch.selected-swatch {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 3px var(--modal-text);
-    }
-    .color-swatch:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 2px var(--modal-text);
-    }
-    #connectorOptionsModal .modal-content h2 {
-        text-align: center;
-    }
-    #connectorOptionsModal label {
-        display: block;
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: var(--modal-text);
-    }
-    .arrow-controls-group {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .style-options {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-    .line-style-btn, .arrow-control-btn {
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: var(--modal-text);
-        padding: 8px 15px;
-        border-radius: 8px;
-        font-size: 0.95em;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        flex: 1;
-        min-width: 90px;
-    }
-    .line-style-btn i, .arrow-control-btn i {
-        font-size: 1.1em;
-    }
-    .line-style-btn.selected, .arrow-control-btn.selected {
-        background: var(--button-hover-bg); 
-        border-color: var(--link-selected-color); 
-        box-shadow: 0 0 0 2px var(--link-selected-color);
-        color: var(--text-on-header); 
-    }
-    .line-style-btn:hover:not(.selected), .arrow-control-btn:hover:not(.selected) {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateY(-1px);
-    }
-    .arrow-control-btn.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        pointer-events: none;
-        transform: translateY(0) !important;
-        box-shadow: none !important;
-    }
-    .link-options-action-buttons {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-    .link-options-action-buttons .modal-btn {
-        flex: 1; 
-    }
-    .link-arrow {
-        pointer-events: none;
-        fill: var(--link-color);
-        transition: fill 0.3s ease;
-    }
-    .link.selected + .link-arrow {
-        fill: var(--link-selected-color) !important;
-    }
-    line.link-hit-area {
-        stroke: transparent;
-        stroke-width: 15px;
-        cursor: pointer;
-        pointer-events: stroke;
-    }
-    line.link-visible {
-        pointer-events: none;
-    }
+    #taskTextPopup #taskFullText a { color: var(--link-color); text-decoration: underline; }
+    #taskTextPopup #taskFullText a:hover { text-decoration: none; }
+    .instruction-text { font-size: 0.85em; color: var(--modal-text); opacity: 0.7; margin-left: 0.5em; font-weight: normal; }
+    #taskTable tbody tr td.task-cell-content { display: flex; align-items: flex-end; gap: 8px; }
+    #taskTable tbody tr .task-detail-textarea { flex-grow: 1; min-height: 38px; overflow: hidden; resize: none; border-radius: 12px; box-sizing: border-box; padding-right: 12px; }
+    .task-view-icon { flex-shrink: 0; font-size: 1.1em; color: var(--close-button-color); cursor: pointer; transition: color 0.2s ease, transform 0.2s ease; padding: 5px; border-radius: 50%; margin-bottom: 3px; }
+    .task-view-icon:hover { color: var(--close-button-hover-color); transform: scale(1.1); background: rgba(255, 255, 255, 0.1); }
+    .color-panel { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 5px; }
+    .color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; flex-shrink: 0; }
+    .color-swatch.selected-swatch { transform: scale(1.1); box-shadow: 0 0 0 3px var(--modal-text); }
+    .color-swatch:hover { transform: scale(1.05); box-shadow: 0 0 0 2px var(--modal-text); }
+    #connectorOptionsModal .modal-content h2 { text-align: center; }
+    #connectorOptionsModal label { display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600; color: var(--modal-text); }
+    .arrow-controls-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .style-options { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
+    .line-style-btn, .arrow-control-btn { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--modal-text); padding: 8px 15px; border-radius: 8px; font-size: 0.95em; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 5px; flex: 1; min-width: 90px; }
+    .line-style-btn i, .arrow-control-btn i { font-size: 1.1em; }
+    .line-style-btn.selected, .arrow-control-btn.selected { background: var(--button-hover-bg); border-color: var(--link-selected-color); box-shadow: 0 0 0 2px var(--link-selected-color); color: var(--text-on-header); }
+    .line-style-btn:hover:not(.selected), .arrow-control-btn:hover:not(.selected) { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
+    .arrow-control-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; transform: translateY(0) !important; box-shadow: none !important; }
+    .link-options-action-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+    .link-options-action-buttons .modal-btn { flex: 1; }
+    .link-arrow { pointer-events: none; fill: var(--link-color); transition: fill 0.3s ease; }
+    .link.selected + .link-arrow { fill: var(--link-selected-color) !important; }
+    line.link-hit-area { stroke: transparent; stroke-width: 15px; cursor: pointer; pointer-events: stroke; }
+    line.link-visible { pointer-events: none; }
   </style>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/linkifyjs@4/dist/linkify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
 </head>
 <body>
-  <div id="lock-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #101020 0%, #0c1428 100%); z-index:9999; display:flex; align-items:center; justify-content:center; color:white; font-family:sans-serif; font-size:2em;">
-  Unauthorized Access
-</div>
   <header>
     <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
     <nav>
@@ -1319,303 +1169,8 @@
         observer.observe(fcCont);
     });
 
-    // This script runs inside your index.html app.
-// FINAL DEBUGGING SCRIPT for index.html
-function initializeApp() {
-    // This is the clean, corrected handshake logic for index.html
-
-    const staticSecret = "ProjectPhoenix-778b9d-Estates-Trusts-LLC";
-
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const expectedKey = staticSecret + year + month + day;
-
-    window.addEventListener("message", (event) => {
-        // Replace with your actual Wix site URL
-        const expectedOrigin = "https://www.socialeap.net";
-
-        if (event.origin !== expectedOrigin) {
-            // Silently ignore messages from other origins
-            return;
-        }
-
-        const receivedKey = event.data;
-
-        if (receivedKey === expectedKey) {
-            // SUCCESS: Keys match. Unlock the app.
-            document.getElementById("lock-overlay").style.display = "none";
-        }
-    });
-
-    // Request the key from the parent window (Wix)
-    window.parent.postMessage("REQUEST_KEY", "*");
-    
-    // --- The rest of your original initializeApp function ---
-    initD3();
-    g('flowchartNameInput').value = data.flowchartName || 'Untitled Flowchart';
-    updateProjectDescButton();
-
-    const tooltip = g('tooltip');
-    if (tooltip) { 
-        document.querySelectorAll('nav button[data-tooltip-text]').forEach(button => { 
-            button.addEventListener('mouseenter', () => { 
-                tooltip.textContent = button.dataset.tooltipText; 
-                const rect = button.getBoundingClientRect(); 
-                tooltip.style.top = `${rect.bottom + 8}px`; 
-                tooltip.style.left = `${rect.left + rect.width / 2}px`; 
-                tooltip.classList.add('visible'); 
-            }); 
-            button.addEventListener('mouseleave', () => tooltip.classList.remove('visible')); 
-        }); 
-    }
-    
-    document.querySelectorAll('.color-panel .color-swatch').forEach(swatch => { 
-        const color = swatch.dataset.color;
-        const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55');
-        if (color) {
-            swatch.style.backgroundColor = hexToRgba(color, opacity);
-        } else {
-            console.warn('Color swatch missing data-color attribute:', swatch); 
-        }
-        swatch.addEventListener('click', function() {
-            document.querySelectorAll('.color-panel .color-swatch').forEach(s => s.classList.remove('selected-swatch'));
-            this.classList.add('selected-swatch');
-            g('nodeColor').value = this.dataset.color;
-        });
-        swatch.addEventListener('mouseenter', showColorSwatchTooltip);
-        swatch.addEventListener('mouseleave', hideTooltip);
-    });
-
-    const themeToggleBtn = g('themeToggleBtn'), body = document.body, prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-    function applyTheme(theme) { 
-        body.classList.toggle('dark-mode', theme === 'dark'); 
-        themeToggleBtn.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; 
-    }
-    const savedTheme = localStorage.getItem('theme') || (prefersDark.matches ? 'dark' : 'light');
-    applyTheme(savedTheme);
-    themeToggleBtn.addEventListener('click', () => { 
-        const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark'; 
-        applyTheme(newTheme); 
-        localStorage.setItem('theme', newTheme); 
-    });
-    g('aiAssistantBtn').onclick = openAIAssistant;
-    g('nodeSizeIncreaseBtn').onclick = () => { 
-        if (currentNodeSizeFactor < MAX_NODE_SIZE_FACTOR) { 
-            currentNodeSizeFactor = parseFloat((currentNodeSizeFactor + NODE_SIZE_STEP).toFixed(2)); 
-            isInitialLayout = false; 
-            updateNodeSizes(); 
-        } 
-    };
-    g('nodeSizeDecreaseBtn').onclick = () => { 
-        if (currentNodeSizeFactor > MIN_NODE_SIZE_FACTOR) { 
-            currentNodeSizeFactor = parseFloat((currentNodeSizeFactor - NODE_SIZE_STEP).toFixed(2)); 
-            isInitialLayout = false; 
-            updateNodeSizes(); 
-        } 
-    };
-    g('colorLegendBtn').onclick = openColorLegendModal;
-    g('closeColorLegendModal').onclick = () => g('colorLegendModal').style.display = 'none';
-    g('colorLegendForm').onsubmit = saveColorLegend;
-    g('templateBtn').onclick = () => { g('templateModal').style.display = 'block'; };
-    document.querySelectorAll('#templateModal .modal-btn').forEach((b) => (b.onclick = (e) => { 
-        loadTemplate(e.target.dataset.template); 
-        g('templateModal').style.display = 'none'; 
-    }));
-    
-    g('addNodeHeaderBtn').onclick = (e) => { 
-        e.preventDefault(); 
-        createNode();
-    };
-
-    const addConnBtn = g('addConnectorBtn');
-    addConnBtn.addEventListener('click', () => { 
-        connectorMode = !connectorMode; 
-        connectorStartNode = null; 
-        addConnBtn.classList.toggle('active', connectorMode); 
-        g('flowchart').style.cursor = connectorMode ? 'crosshair' : 'default'; 
-        if (!connectorMode) {
-            nodeGroup.selectAll('.flowchart-node-html').style('outline', 'none');
-        }
-    });
-    
-    g('saveBtn').onclick = saveToFile;
-    g('uploadBtn').onclick = () => g('fileInput').click();
-    g('fileInput').onchange = (e) => { 
-        if (e.target.files.length > 0) loadFromFile(e.target.files[0]); 
-    };
-    g('userGuideBtn').onclick = () => { g('userGuideModal').style.display = 'block'; };
-    g('closeUserGuideModal').onclick = () => g('userGuideModal').style.display = 'none';
-    g('shareBtn').onclick = () => g('shareModal').style.display = 'block';
-    g('closeShareModal').onclick = () => g('shareModal').style.display = 'none';
-    g('projectDescBtn').onclick = () => { 
-        const pd = data.projectDescription || {}; 
-        g('projectSummary').textContent = (pd.summary && pd.generatedDate) ? pd.summary : 'File does not contain a Project Description.'; 
-        g('projectGeneratedDate').textContent = (pd.summary && pd.generatedDate) ? `Generated: ${pd.generatedDate}` : ''; 
-        g('projectDescModal').style.display = 'block'; 
-    };
-    
-    document.querySelectorAll('.modal .close-button').forEach((b) => { 
-        const modalId = b.closest('.modal').id;
-        if (!['closeUserGuideModal','closeProjectDescModal','closeShareModal','closeColorLegendModal', 'closeConnectorOptionsModal'].includes(b.id)) { 
-            b.onclick = (e) => { 
-                e.stopPropagation(); 
-                b.closest('.modal').style.display = 'none'; 
-                if (modalId === 'modal') { 
-                    selectedNode = null;
-                }
-            }; 
-        }
-    });
-    g('closeProjectDescModal').onclick = (e) => { e.stopPropagation(); g('projectDescModal').style.display = 'none'; };
-    g('closeConnectorOptionsModal').onclick = (e) => { 
-        e.stopPropagation(); 
-        g('connectorOptionsModal').style.display = 'none';
-        linkGroup.selectAll('g.link-container').classed('selected', false); 
-        selectedLink = null; 
-    };
-    window.onclick = (e) => { 
-        if (e.target.classList.contains('modal') && 
-            !e.target.closest('#modal') && 
-            !e.target.closest('#taskTextPopup') &&
-            !e.target.closest('#templateModal') &&
-            !e.target.closest('#userGuideModal') &&
-            !e.target.closest('#shareModal') &&
-            !e.target.closest('#projectDescModal') &&
-            !e.target.closest('#colorLegendModal') &&
-            !e.target.closest('#connectorOptionsModal') 
-        ) {
-            e.target.style.display = 'none';
-        }
-    };
-
-    g('taskForm').onsubmit = (e) => {
-        e.preventDefault();
-        if (selectedNode) {
-            let tasks = [];
-            g('taskTable').querySelectorAll('tbody tr').forEach((r) => {
-                let chk = r.querySelector('input[type="checkbox"]');
-                let txt = r.querySelector('.task-detail-textarea');
-                if (txt && txt.value.trim() !== '') {
-                    tasks.push({ completed: chk.checked, task: txt.value.trim() });
-                }
-            });
-            Object.assign(selectedNode, {
-                name: g('taskName').value,
-                responsible: g('responsible').value,
-                status: g('status').value,
-                deadline: g('deadline').value,
-                priority: g('priority').value,
-                actionDescription: tasks,
-                color: g('nodeColor').value || null,
-            });
-            selectedNode.fx = selectedNode.x;
-            selectedNode.fy = selectedNode.y;
-            isInitialLayout = false;
-            update();
-        }
-        g('modal').style.display = 'none';
-    };
-    
-    g('confirmDeleteLinkBtn').onclick = () => { 
-        if (selectedLink && confirm('Are you sure you want to delete this connection?')) { 
-            data.links = data.links.filter(l => l !== selectedLink); 
-            isInitialLayout = false; 
-            update(); 
-        } 
-        g('connectorOptionsModal').style.display = 'none'; 
-        linkGroup.selectAll('g.link-container').classed('selected', false); 
-        selectedLink = null; 
-    };
-    
-    document.querySelectorAll('#connectorOptionsModal .line-style-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (selectedLink) {
-                selectedLink.lineStyle = this.dataset.style;
-                updateButtonSelection(this, '#connectorOptionsModal .line-style-btn');
-            }
-        });
-    });
-
-    g('addRemoveArrowBtn').addEventListener('click', function() {
-        if (selectedLink) {
-            if (selectedLink.arrowDirection === 'none') {
-                selectedLink.arrowDirection = 'forward';
-            } else {
-                selectedLink.arrowDirection = 'none';
-            }
-            updateConnectorModalArrowButtons();
-        }
-    });
-
-    g('switchArrowDirectionBtn').addEventListener('click', function() {
-        if (selectedLink && selectedLink.arrowDirection !== 'none') { 
-            selectedLink.arrowDirection = (selectedLink.arrowDirection === 'forward') ? 'backward' : 'forward';
-            updateConnectorModalArrowButtons(); 
-        }
-    });
-
-    g('saveConnectorOptionsBtn').onclick = (e) => {
-        e.preventDefault(); 
-        if (selectedLink) {
-            update(); 
-        }
-        g('connectorOptionsModal').style.display = 'none'; 
-        linkGroup.selectAll('g.link-container').classed('selected', false); 
-        selectedLink = null;
-    };
-
-    g('addTaskRowBtn').addEventListener('click', () => addTaskRow({}));
-    g('deleteTaskBtn').addEventListener('click', () => { 
-        let sR = g('taskTable').querySelector('tbody tr.selectedTaskRow'); 
-        if (sR) sR.remove(); 
-        g('taskTextPopup').style.display = 'none'; 
-    });
-    g('deleteNodeBtn').addEventListener('click', () => { 
-        if (selectedNode && confirm('Delete node?')) { 
-            const selectedId = selectedNode.id; 
-            data.nodes = data.nodes.filter((n) => n.id !== selectedId); 
-            data.links = data.links.filter(l => (l.source.id || l.source) !== selectedId && (l.target.id || l.target) !== selectedId); 
-            selectedNode = null; 
-            isInitialLayout = false; 
-            update(); 
-        } 
-        g('modal').style.display = 'none'; 
-    });
-    g('flowchartNameInput').addEventListener('input', function () { 
-        data.flowchartName = this.value || 'Untitled'; 
-    });
-    
-    const originalAddConnectorClick = g('addConnectorBtn').onclick; 
-    g('addConnectorBtn').onclick = (e) => {
-        if (originalAddConnectorClick) originalAddConnectorClick(e); 
-
-        setTimeout(() => {
-            const newLink = data.links.find(l => 
-                (l.source === (connectorStartNode ? connectorStartNode.id : undefined) && l.target === (selectedNode ? selectedNode.id : undefined)) ||
-                (l.source === (selectedNode ? selectedNode.id : undefined) && l.target === (connectorStartNode ? connectorStartNode.id : undefined))
-            );
-            
-            if (newLink && (typeof newLink.lineStyle === 'undefined' || typeof newLink.arrowDirection === 'undefined')) {
-                newLink.lineStyle = newLink.lineStyle || 'solid';
-                newLink.arrowDirection = newLink.arrowDirection || 'none'; 
-                update(); 
-            }
-        }, 0); 
-    };
-
-    if (data.nodes.length === 0) {
-        isInitialLayout = true;
-        loadTemplate('prototype');
-    } else {
-        isInitialLayout = true;
-        update();
-    }
-} 
-    // --- End of the Dynamic Digital Handshake ---
-
-  initD3();
+    function initializeApp() {
+        initD3();
         
         g('flowchartNameInput').value = data.flowchartName || 'Untitled Flowchart';
         updateProjectDescButton();
