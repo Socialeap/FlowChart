@@ -414,7 +414,7 @@
 
   <script>
     let selectedNode = null, selectedLink = null,
-      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } }, // ADDED lineLegend default
+      data = { flowchartName: 'Untitled Flowchart', projectDescription: { summary: '', generatedDate: '' }, nodes: [], links: [], colorLegend: {}, lineLegend: { "solid": "Standard Connection", "dotted": "Optional / Related Connection" } },
       simulation, svg, nodeGroup, linkGroup, mainZoomGroup,
       isInitialLayout = true;
     const BASE_NODE_DIMENSION = 160;
@@ -710,10 +710,8 @@
             nameDiv.text(d.name || '');
             let indicatorHtml = d.priority === 'Low' ? '🔴 ⚪️ ⚪️' : d.priority === 'Normal' ? '🔴 🔴 ⚪️' : d.priority === 'High' ? '🔴 🔴 🔴' : '⚪️ ⚪️ ⚪️';
             prDiv.html(indicatorHtml);
-            let tasks = d.actionDescription || [];
-            try {
-                if (typeof tasks === 'string') tasks = JSON.parse(tasks);
-            } catch(e) { tasks = []; }
+            
+            const tasks = d.actionDescription || [];
             const compC = tasks.filter((t) => t.completed).length, totC = tasks.length;
             if (totC > 0) { pillDiv.text(`✓ ${compC}/${totC}`).style('display', 'block'); } 
             else { pillDiv.style('display', 'none'); }
@@ -815,21 +813,9 @@
         ti.dispatchEvent(new Event('input')); 
     }
 
-    function populateTaskTable(taskStringOrArray) {
+    function populateTaskTable(taskArray) {
         const tb = g('taskTable').querySelector('tbody');
         tb.innerHTML = '';
-        let taskArray = [];
-        if (typeof taskStringOrArray === 'string') {
-            try {
-                taskArray = JSON.parse(taskStringOrArray);
-            } catch (e) {
-                console.error("Error parsing actionDescription:", e);
-                taskArray = [];
-            }
-        } else if (Array.isArray(taskStringOrArray)) {
-            taskArray = taskStringOrArray;
-        }
-
         if (Array.isArray(taskArray) && taskArray.length > 0) {
             taskArray.forEach((t) => addTaskRow(t));
         } else {
@@ -899,7 +885,7 @@
                     responsible: n.responsible,
                     deadline: n.deadline,
                     priority: n.priority,
-                    actionDescription: n.actionDescription || [], // <-- CORRECTED LINE
+                    actionDescription: n.actionDescription || [],
                     color: n.color,
                     x: n.x,
                     y: n.y,
@@ -943,12 +929,14 @@
 
                 if (fD && typeof fD === 'object' && Array.isArray(fD.nodes)) {
                     
+                    // Gatekeeper logic: Ensure actionDescription is always an array upon loading.
                     fD.nodes.forEach(node => {
                         if (typeof node.actionDescription === 'string') {
                             try {
                                 const parsed = JSON.parse(node.actionDescription);
                                 node.actionDescription = Array.isArray(parsed) ? parsed : [];
                             } catch (parseError) {
+                                console.error("Could not parse actionDescription string for node:", node.id);
                                 node.actionDescription = [];
                             }
                         } else if (!Array.isArray(node.actionDescription)) {
@@ -1211,8 +1199,10 @@
       event.preventDefault(); 
       document.querySelectorAll('#color-legend-entries input').forEach(input => { 
         const color = input.dataset.color, desc = input.value.trim(); 
-        if (desc) data.colorLegend[color] = desc; 
-        else delete data.colorLegend[color]; 
+        if(color) {
+            if (desc) data.colorLegend[color] = desc; 
+            else delete data.colorLegend[color]; 
+        }
       }); 
 
       data.lineLegend = data.lineLegend || {}; 
@@ -1228,13 +1218,14 @@
     function updateLegendDisplay() { 
       const container = g('color-legend-display'); 
       container.innerHTML = ''; 
-      const colorItems = Object.entries(data.colorLegend); 
+      const colorItems = Object.entries(data.colorLegend || {}); 
       const opacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-fill-opacity').trim() || '0.55'); 
       
       let hasContent = false;
 
       if (colorItems.length > 0) { 
         colorItems.forEach(([color, description]) => { 
+          if(color === "undefined") return;
           const item = document.createElement('div'); 
           item.className = 'legend-display-item'; 
           const swatch = document.createElement('div'); 
