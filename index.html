@@ -1320,46 +1320,50 @@
     });
 
     // This script runs inside your index.html app.
-
-// This script now ASKS for the key when it's ready.
+// FINAL DEBUGGING SCRIPT for index.html
 
 function initializeApp() {
-    // --- Start of the "Request and Response" Handshake ---
-
-    // 1. Define the *exact same* static secret.
+    console.log("Iframe App: Initialized.");
     const staticSecret = "ProjectPhoenix-778b9d-Estates-Trusts-LLC";
 
-    // 2. Calculate what the key *should* be for today.
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     const expectedKey = staticSecret + year + month + day;
+    
+    console.log("Iframe App: Calculated Expected Key:", expectedKey);
 
-    // 3. Listen for the response from the parent window (Wix).
     window.addEventListener("message", (event) => {
-        // SECURITY CHECK: Only accept messages from your Wix domain.
-        // Replace with your actual Wix site URL.
-        if (event.origin !== "https://www.socialeap.net/flowchart-manager") {
+        // Replace with your actual Wix site URL
+        const expectedOrigin = "https://www.socialeap.net";
+
+        console.log("Iframe App: Received a message.", {
+            receivedFrom: event.origin,
+            expectedFrom: expectedOrigin,
+            dataLength: event.data.length
+        });
+
+        if (event.origin !== expectedOrigin) {
+            console.error("Iframe App FAILED: Origin mismatch. Received:", event.origin, "Expected:", expectedOrigin);
             return;
         }
 
         const receivedKey = event.data;
 
         if (receivedKey === expectedKey) {
-            console.log("Handshake successful. Unlocking application.");
+            console.log("%cIframe App SUCCESS: Keys match. Unlocking.", "color: lightgreen; font-weight: bold;");
             document.getElementById("lock-overlay").style.display = "none";
         } else {
-            console.log("Handshake failed. Invalid key received.");
+            console.error("Iframe App FAILED: Key mismatch.");
+            console.log("Iframe App Received Key:", receivedKey);
         }
     });
 
-    // 4. After setting up the listener, REQUEST the key from the parent.
-    // The "*" targetOrigin is okay here because we are not sending sensitive data,
-    // and we validate the origin of the response anyway.
-    console.log("Application ready. Requesting key from parent window.");
+    console.log("Iframe App: Sending 'REQUEST_KEY' to parent.");
     window.parent.postMessage("REQUEST_KEY", "*");
-
+  
+}
     // --- End of the Handshake ---
     
     // The rest of your initializeApp function follows...
