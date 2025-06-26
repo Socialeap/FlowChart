@@ -1321,10 +1321,12 @@
 
     // This script runs inside your index.html app.
 
-function initializeApp() {
-    // --- Start of the Dynamic Digital Handshake ---
+// This script now ASKS for the key when it's ready.
 
-    // 1. Define the *exact same* static secret from the Wix page.
+function initializeApp() {
+    // --- Start of the "Request and Response" Handshake ---
+
+    // 1. Define the *exact same* static secret.
     const staticSecret = "ProjectPhoenix-778b9d-Estates-Trusts-LLC";
 
     // 2. Calculate what the key *should* be for today.
@@ -1334,29 +1336,37 @@ function initializeApp() {
     const day = String(today.getDate()).padStart(2, '0');
     const expectedKey = staticSecret + year + month + day;
 
-    // 3. Listen for the "whisper" from the parent window (Wix).
+    // 3. Listen for the response from the parent window (Wix).
     window.addEventListener("message", (event) => {
         // SECURITY CHECK: Only accept messages from your Wix domain.
-        // Replace "https://your-wix-site.wixsite.com" with your actual Wix site URL.
+        // Replace with your actual Wix site URL.
         if (event.origin !== "https://your-wix-site.wixsite.com") {
-            console.log("Message received from unauthorized origin:", event.origin);
-            return; // Ignore the message.
+            return;
         }
 
         const receivedKey = event.data;
 
-        // 4. Check if the received key matches the expected key.
         if (receivedKey === expectedKey) {
-            // SUCCESS! Keys match. Unlock the app.
             console.log("Handshake successful. Unlocking application.");
             document.getElementById("lock-overlay").style.display = "none";
         } else {
-            // FAILURE. Keys do not match.
             console.log("Handshake failed. Invalid key received.");
         }
     });
 
-    // --- End of the Dynamic Digital Handshake ---
+    // 4. After setting up the listener, REQUEST the key from the parent.
+    // The "*" targetOrigin is okay here because we are not sending sensitive data,
+    // and we validate the origin of the response anyway.
+    console.log("Application ready. Requesting key from parent window.");
+    window.parent.postMessage("REQUEST_KEY", "*");
+
+    // --- End of the Handshake ---
+    
+    // The rest of your initializeApp function follows...
+    initD3();
+    g('flowchartNameInput').value = data.flowchartName || 'Untitled Flowchart';
+    // ...etc.
+}    // --- End of the Dynamic Digital Handshake ---
 
   initD3();
         
