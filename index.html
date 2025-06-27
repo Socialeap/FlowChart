@@ -64,6 +64,28 @@
       --link-color: #aaa;
       --link-selected-color: #ff5252;
     }
+    
+    /* --- Added for the Security Blocker --- */
+    #security-blocker {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #1c1c1e;
+        z-index: 20000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #e0e0e0;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    #security-blocker h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
 
     * { box-sizing: border-box; }
     body { margin: 0; font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: #333; display: flex; flex-direction: column; min-height: 100vh; transition: background 0.5s ease; position: relative; overflow-x: hidden; }
@@ -291,6 +313,8 @@
   <script src="https://cdn.jsdelivr.net/npm/linkify-html@4/dist/linkify-html.min.js"></script>
 </head>
 <body>
+  <div id="security-blocker"><h2>Unauthorized Access</h2></div>
+
   <header>
     <h1><img src="https://static.wixstatic.com/media/c3283f_a3e1ec47496f42f7be617a2cd7a7bc9e~mv2.png" alt="Logo" id="headerLogo"/> FlowChart Manager <input type="text" id="flowchartNameInput" placeholder="Enter Flowchart Name…"/></h1>
     <nav>
@@ -1311,15 +1335,45 @@
     function updateNodeSizes() { if (!simulation) return; const sD = BASE_NODE_DIMENSION * currentNodeSizeFactor; simulation.force('collide').radius((sD * 0.55) + 25); simulation.force('charge').strength(-1800 * (sD / 160)); isInitialLayout = false; update(); }
     
     document.addEventListener('DOMContentLoaded', () => {
-        const fcCont = g('flowchartContainer');
-        const observer = new ResizeObserver(entries => {
-            const entry = entries[0];
-            if (entry.contentRect.width > 0) {
-                initializeApp();
-                observer.disconnect();
+        // --- Security Validation Logic ---
+        const authorizedParentOrigin = "https://www.socialeap.net"; // Your Wix site URL
+        const securityBlocker = g('security-blocker');
+
+        let isAuthorized = false;
+
+        try {
+            // Check if running inside an iframe and from the correct parent
+            if (window.self !== window.top && window.location.ancestorOrigins.length > 0) {
+                const parentOrigin = window.location.ancestorOrigins[0];
+                if (parentOrigin === authorizedParentOrigin) {
+                    isAuthorized = true;
+                }
             }
-        });
-        observer.observe(fcCont);
+        } catch (e) {
+            console.error("Security check failed:", e);
+            isAuthorized = false;
+        }
+        
+        if (isAuthorized) {
+            // If authorized, remove the blocker and initialize the app
+            securityBlocker.style.display = 'none';
+            
+            // --- ALL ORIGINAL INITIALIZATION CODE NOW GOES HERE ---
+            const fcCont = g('flowchartContainer');
+            const observer = new ResizeObserver(entries => {
+                const entry = entries[0];
+                if (entry.contentRect.width > 0) {
+                    initializeApp();
+                    observer.disconnect();
+                }
+            });
+            observer.observe(fcCont);
+            // --- END OF ORIGINAL INITIALIZATION CODE ---
+
+        } else {
+            // If not authorized, the blocker remains in place.
+            console.error(`Access Denied: The application must be hosted on ${authorizedParentOrigin}`);
+        }
     });
 
     function initializeApp() {
